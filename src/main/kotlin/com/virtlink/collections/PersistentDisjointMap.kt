@@ -5,18 +5,73 @@ import kotlinx.collections.immutable.PersistentMap
 /**
  * A persistent disjoint map.
  */
-interface PersistentDisjointMap<K, V> : DisjointMap<K, V>, PersistentMap<K, V> {
+interface PersistentDisjointMap<K, V> : ImmutableDisjointMap<K, V>, PersistentMap<K, V> {
+
+    /**
+     * Associates the specified [key] with a new component with the specified [value].
+     *
+     * If this map already contains a component with the key,
+     * the key is removed from the component and added to a new one.
+     *
+     * @param key the key
+     * @param value the value to associate with the specified [key]
+     * @return the resulting persistent map
+     */
+    override fun put(key: K, value: V): PersistentDisjointMap<K, V>
+
+    /**
+     * Removes the specified [key] from this map.
+     *
+     * When the removed key was the final key in the component, the component is removed as well.
+     *
+     * @param key the key to remove
+     * @return the resulting persistent map
+     */
+    override fun remove(key: K): PersistentDisjointMap<K, V>
+
+    /**
+     * Removes the specified [key] that maps to the specified [value].
+     *
+     * When the removed key was the final key in the component, the component is removed as well.
+     *
+     * @param key the key to remove
+     * @param value the value of the key to remove
+     * @return the resulting persistent map
+     */
+    override fun remove(key: K, value: V): PersistentDisjointMap<K, V>
+
+    /**
+     * Merges the specified map [m] with this map.
+     *
+     * If the given map is a [DisjointMap], the components from the map are added to this
+     * map. Any existing keys in this map are reassociated with the new components.
+     * If the given map is an ordinary [Map], this call is equivalent to calling [put]
+     * once for each mapping in the specified map.
+     *
+     * @param m the map to associate
+     * @return the resulting persistent map
+     */
+    override fun putAll(m: Map<out K, V>): PersistentDisjointMap<K, V>
+
+    /**
+     * Removes all associations from this map.
+     *
+     * @return the resulting persistent map
+     */
+    override fun clear(): PersistentDisjointMap<K, V>
+
+
 
     /**
      * Unifies the components that include the given keys.
      *
      * @param key1 one key
      * @param key2 another key
-     * @param unify the function that unifies the associated values of each of the components
      * @param default the function that provides a default value to use when no value is specified
+     * @param unify the function that unifies the associated values of each of the components
      * @return the resulting persistent map
      */
-    fun union(key1: K, key2: K, unify: (V, V) -> V, default: () -> V): PersistentDisjointMap<K, V>
+    fun union(key1: K, key2: K, default: () -> V, unify: (V, V) -> V): PersistentDisjointMap<K, V>
 
     /**
      * Disunifies the given key from the given component.
@@ -39,9 +94,9 @@ interface PersistentDisjointMap<K, V> : DisjointMap<K, V>, PersistentMap<K, V> {
     fun setComponent(key: K, value: V): PersistentDisjointMap<K, V>
 
     /**
-     * Removes the given key from the map.
+     * Removes the specified [key] from this map.
      *
-     * When the removed key was the final key in the component, the component is removed.
+     * When the removed key was the final key in the component, the component is removed as well.
      *
      * @param key the key to remove
      * @return a result object with the resulting persistent map,

@@ -6,14 +6,14 @@ package com.virtlink.collections
 interface TransientDisjointMap<K, V> : DisjointMap<K, V>, MutableMap<K, V> {
 
     /**
-     * Unifies the components that include the given elements.
+     * Unifies the components that include the given keys.
      *
      * @param key1 one key
      * @param key2 another key
-     * @param unify the function that unifies the associated values of each of the components
      * @param default the function that provides a default value to use when no value is specified
+     * @param unify the function that unifies the associated values of each of the components
      */
-    fun union(key1: K, key2: K, unify: (V, V) -> V, default: () -> V)
+    fun union(key1: K, key2: K, default: () -> V, unify: (V, V) -> V)
 
     /**
      * Disunifies the given key from the given component.
