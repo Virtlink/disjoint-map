@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test
 /**
  * Tests the [DisjointMap] interface.
  */
-@Suppress("ClassName")
+@Suppress("ClassName", "unused", "RemoveRedundantBackticks")
 interface DisjointMapTests {
 
     fun <K, V> create(initial: Map<Set<K>, V> = emptyMap()): DisjointMap<K, V>
@@ -571,8 +571,8 @@ interface DisjointMapTests {
             val entries = map.entries
 
             // Assert
-            assertEquals(emptySet<Entry<String, String>>(), entries)
-            assertEquals(emptySet<Entry<String, String>>(), entries.iterator().asSequence().toSet())
+            assertEquals(emptySet<Entry<String, String>>(), entries.toEntrySet())
+            assertEquals(emptySet<Entry<String, String>>(), entries.iterator().asSequence().toEntrySet())
             assertEquals(0, entries.size)
             assertFalse(entries.contains(Entry("X", "V")))
         }
@@ -592,20 +592,13 @@ interface DisjointMapTests {
             val entries = map.entries
 
             // Assert
-            assertEquals(setOf(
+            val expectedSet = setOf(
                 Entry("A", "Va"),
                 Entry("B", "V"),
                 Entry("C", "V")
-            ), entries.map { Entry.of(it) }.toSet())
-            assertEquals(setOf(
-                Entry("A", "Va"),
-                Entry("B", "V"),
-                Entry("C", "V")
-            ), entries.iterator().asSequence().map {
-                Entry.of(
-                    it
-                )
-            }.toSet())
+            )
+            assertEquals(expectedSet, entries.toEntrySet())
+            assertEquals(expectedSet, entries.iterator().asSequence().toEntrySet())
             assertEquals(3, entries.size)
             assertFalse(entries.contains(Entry("A", "V")))
             assertTrue(entries.contains(Entry("B", "V")))
@@ -626,30 +619,16 @@ interface DisjointMapTests {
             val entries = map.entries
 
             // Assert
-            assertEquals(
-                setOf(
-                    Entry("A1", "Va"),
-                    Entry("A2", "Va"),
-                    Entry("A3", "Va"),
-                    Entry("B1", "V"),
-                    Entry("B2", "V"),
-                    Entry("C1", "V")
-                ), entries.map { Entry.of(it) }.toSet()
+            val expectedSet = setOf(
+                Entry("A1", "Va"),
+                Entry("A2", "Va"),
+                Entry("A3", "Va"),
+                Entry("B1", "V"),
+                Entry("B2", "V"),
+                Entry("C1", "V")
             )
-            assertEquals(
-                setOf(
-                    Entry("A1", "Va"),
-                    Entry("A2", "Va"),
-                    Entry("A3", "Va"),
-                    Entry("B1", "V"),
-                    Entry("B2", "V"),
-                    Entry("C1", "V")
-                ), entries.iterator().asSequence().map {
-                    Entry.of(
-                        it
-                    )
-                }.toSet()
-            )
+            assertEquals(expectedSet, entries.toEntrySet())
+            assertEquals(expectedSet, entries.iterator().asSequence().toEntrySet())
             assertEquals(6, entries.size)
             assertFalse(entries.contains(Entry("A1", "V")))
             assertTrue(entries.contains(Entry("B1", "V")))
@@ -670,37 +649,101 @@ interface DisjointMapTests {
             val entries = map.entries
 
             // Assert
-            assertEquals(
-                setOf(
-                    Entry("A1", "Va"),
-                    Entry("A2", "Va"),
-                    Entry("A3", "Va"),
-                    Entry("B1", null),
-                    Entry("B2", null),
-                    Entry("C1", "V")
-                ),
-                entries.map { Entry.of(it) }.toSet()
+            val expectedSet = setOf(
+                Entry("A1", "Va"),
+                Entry("A2", "Va"),
+                Entry("A3", "Va"),
+                Entry("B1", null),
+                Entry("B2", null),
+                Entry("C1", "V")
             )
-            assertEquals(
-                setOf(
-                    Entry("A1", "Va"),
-                    Entry("A2", "Va"),
-                    Entry("A3", "Va"),
-                    Entry("B1", null),
-                    Entry("B2", null),
-                    Entry("C1", "V")
-                ),
-                entries.iterator().asSequence().map {
-                    Entry.of(
-                        it
-                    )
-                }.toSet()
-            )
+            assertEquals(expectedSet, entries.toEntrySet())
+            assertEquals(expectedSet, entries.iterator().asSequence().toEntrySet())
             assertEquals(6, entries.size)
             assertFalse(entries.contains(Entry("A1", "V")))
             assertTrue(entries.contains(Entry("B1", null)))
         }
     }
+
+
+    /**
+     * Tests the [DisjointMap.components] property.
+     */
+    interface `components`: DisjointMapTests {
+
+        @Test
+        fun `returns empty map for empty map`() {
+            // Arrange
+            val map = create<String, String>()
+
+            // Act
+            val components = map.components
+
+            // Assert
+            assertEquals(emptyMap<Set<String>, String>(), components)
+            assertEquals(emptyMap<Set<String>, String>(), components.iterator().asSequence().toMap())
+            assertEquals(0, components.size)
+        }
+
+        @Test
+        fun `returns representative keys and associated values`() {
+            // Arrange
+            val expectedMap = mapOf(
+                setOf("A") to "Va",
+                setOf("B") to "V",
+                setOf("C") to "V"
+            )
+            val map = create(expectedMap)
+
+            // Act
+            val components = map.components
+
+            // Assert
+            assertEquals(expectedMap, components)
+            assertEquals(expectedMap, components.iterator().asSequence().toMap())
+            assertEquals(3, components.size)
+        }
+
+        @Test
+        fun `returns all keys and associated values`() {
+            // Arrange
+            val expectedMap = mapOf(
+                setOf("A1", "A2", "A3") to "Va",
+                setOf("B1", "B2") to "V",
+                setOf("C1") to "V"
+            )
+            val map = create(expectedMap)
+
+            // Act
+            val components = map.components
+
+            // Assert
+            assertEquals(expectedMap, components)
+            assertEquals(expectedMap, components.iterator().asSequence().toMap())
+            assertEquals(6, components.size)
+        }
+
+        @Test
+        fun `returns components that have null value`() {
+            // Arrange
+            val expectedMap = mapOf(
+                setOf("A1", "A2", "A3") to "Va",
+                setOf("B1", "B2") to null,
+                setOf("C1") to "V"
+            )
+            val map = create(expectedMap)
+
+            // Act
+            val components = map.components
+
+            // Assert
+            assertEquals(expectedMap, components)
+            assertEquals(expectedMap, components.iterator().asSequence().toMap())
+            assertEquals(6, components.size)
+        }
+
+    }
+
 
     /**
      * Tests the [DisjointMap.find] method.
@@ -966,8 +1009,6 @@ interface DisjointMapTests {
         }
 
     }
-
-    // TODO: builder()
 
     data class Entry<K, V>(override val key: K, override val value: V) : Map.Entry<K, V> {
         companion object {

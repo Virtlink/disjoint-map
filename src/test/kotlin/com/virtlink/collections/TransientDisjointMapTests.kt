@@ -6,10 +6,21 @@ import org.junit.jupiter.api.Test
 /**
  * Tests the [TransientDisjointMapTests] interface.
  */
-@Suppress("ClassName")
+@Suppress("ClassName", "unused", "RemoveRedundantBackticks")
 interface TransientDisjointMapTests : DisjointMapTests {
 
     override fun <K, V> create(initial: Map<Set<K>, V>): TransientDisjointMap<K, V>
+
+    // put
+
+    // remove1
+    // remove2
+
+    // putAll
+    // clear
+    // keys
+    // values
+    // entries
 
     /**
      * Tests the [TransientDisjointMap.union] method.
@@ -168,9 +179,9 @@ interface TransientDisjointMapTests : DisjointMapTests {
 
 
     /**
-     * Tests the [TransientDisjointMap.set] method.
+     * Tests the [TransientDisjointMap.setComponent] method.
      */
-    interface `set()`: TransientDisjointMapTests {
+    interface `setComponent()`: TransientDisjointMapTests {
 
         @Test
         fun `sets a new value to a new component`() {
@@ -181,7 +192,7 @@ interface TransientDisjointMapTests : DisjointMapTests {
             assertEquals(null, map["B"])
 
             // Act
-            map.set("B", "XX")
+            map.setComponent("B", "XX")
 
             // Assert
             assertEquals("XX", map["B"])
@@ -201,7 +212,7 @@ interface TransientDisjointMapTests : DisjointMapTests {
             assertEquals(null, map["B"])
 
             // Act
-            map.set("C", "XX")
+            map.setComponent("C", "XX")
 
             // Assert
             assertEquals("XX", map["B"])
@@ -220,7 +231,7 @@ interface TransientDisjointMapTests : DisjointMapTests {
             assertEquals("V", map["B"])
 
             // Act
-            map.set("C", "XX")
+            map.setComponent("C", "XX")
 
             // Assert
             assertEquals("XX", map["B"])
@@ -238,9 +249,6 @@ interface TransientDisjointMapTests : DisjointMapTests {
             // Arrange
             val map = create<String, String>()
 
-            // Assume
-            assertEquals(null, map["B"])
-
             // Act
             val newValue = map.compute("B") { r, v ->
                 assertEquals("B", r)
@@ -249,7 +257,9 @@ interface TransientDisjointMapTests : DisjointMapTests {
             }
 
             // Assert
-            assertEquals("XX", map["B"])
+            assertEquals(mapOf(
+                setOf("B") to "XX"
+            ), map.components)
             assertEquals("XX", newValue)
         }
 
@@ -263,11 +273,6 @@ interface TransientDisjointMapTests : DisjointMapTests {
                 )
             )
 
-            // Assume
-            assertEquals(null, map["A"])
-            assertEquals(null, map["B"])
-            assertEquals(null, map["C"])
-
             // Act
             val newValue = map.compute("B") { r, v ->
                 assertEquals("A", r)
@@ -276,9 +281,9 @@ interface TransientDisjointMapTests : DisjointMapTests {
             }
 
             // Assert
-            assertEquals("XX", map["A"])
-            assertEquals("XX", map["B"])
-            assertEquals("XX", map["C"])
+            assertEquals(mapOf(
+                setOf("A", "B", "C") to "XX"
+            ), map.components)
             assertEquals("XX", newValue)
         }
 
@@ -291,11 +296,6 @@ interface TransientDisjointMapTests : DisjointMapTests {
                 )
             )
 
-            // Assume
-            assertEquals("V", map["A"])
-            assertEquals("V", map["B"])
-            assertEquals("V", map["C"])
-
             // Act
             val newValue = map.compute("B") { r, v ->
                 assertEquals("A", r)
@@ -304,9 +304,9 @@ interface TransientDisjointMapTests : DisjointMapTests {
             }
 
             // Assert
-            assertEquals("XX", map["A"])
-            assertEquals("XX", map["B"])
-            assertEquals("XX", map["C"])
+            assertEquals(mapOf(
+                setOf("A", "B", "C") to "XX"
+            ), map.components)
             assertEquals("XX", newValue)
         }
 
@@ -325,16 +325,13 @@ interface TransientDisjointMapTests : DisjointMapTests {
             // Arrange
             val map = create<String, String>()
 
-            // Assume
-            assertEquals(null, map["B"])
-
             // Act
-            val newValue = map.computeIfPresent("B") { r, v ->
+            val newValue = map.computeIfPresent("B") { _, _ ->
                 throw IllegalStateException()
             }
 
             // Assert
-            assertEquals(null, map["B"])
+            assertEquals(emptyMap<Set<String>, String>(), map.components)
             assertEquals(null, newValue)
         }
 
@@ -348,20 +345,15 @@ interface TransientDisjointMapTests : DisjointMapTests {
                 )
             )
 
-            // Assume
-            assertEquals(null, map["A"])
-            assertEquals(null, map["B"])
-            assertEquals(null, map["C"])
-
             // Act
-            val newValue = map.computeIfPresent("B") { r, v ->
+            val newValue = map.computeIfPresent("B") { _, _ ->
                 throw IllegalStateException()
             }
 
             // Assert
-            assertEquals(null, map["A"])
-            assertEquals(null, map["B"])
-            assertEquals(null, map["C"])
+            assertEquals(mapOf(
+                setOf("A", "B", "C") to null
+            ), map.components)
             assertEquals(null, newValue)
         }
 
@@ -374,11 +366,6 @@ interface TransientDisjointMapTests : DisjointMapTests {
                 )
             )
 
-            // Assume
-            assertEquals("V", map["A"])
-            assertEquals("V", map["B"])
-            assertEquals("V", map["C"])
-
             // Act
             val newValue = map.computeIfPresent("B") { r, v ->
                 assertEquals("A", r)
@@ -387,9 +374,9 @@ interface TransientDisjointMapTests : DisjointMapTests {
             }
 
             // Assert
-            assertEquals("XX", map["A"])
-            assertEquals("XX", map["B"])
-            assertEquals("XX", map["C"])
+            assertEquals(mapOf(
+                setOf("A", "B", "C") to "XX"
+            ), map.components)
             assertEquals("XX", newValue)
         }
 
@@ -407,9 +394,6 @@ interface TransientDisjointMapTests : DisjointMapTests {
             // Arrange
             val map = create<String, String>()
 
-            // Assume
-            assertEquals(null, map["B"])
-
             // Act
             val newValue = map.computeIfAbsent("B") { r ->
                 assertEquals("B", r)
@@ -417,7 +401,9 @@ interface TransientDisjointMapTests : DisjointMapTests {
             }
 
             // Assert
-            assertEquals("XX", map["B"])
+            assertEquals(mapOf(
+                setOf("B") to "XX"
+            ), map.components)
             assertEquals("XX", newValue)
         }
 
@@ -431,11 +417,6 @@ interface TransientDisjointMapTests : DisjointMapTests {
                 )
             )
 
-            // Assume
-            assertEquals(null, map["A"])
-            assertEquals(null, map["B"])
-            assertEquals(null, map["C"])
-
             // Act
             val newValue = map.computeIfAbsent("B") { r ->
                 assertEquals("A", r)
@@ -443,9 +424,9 @@ interface TransientDisjointMapTests : DisjointMapTests {
             }
 
             // Assert
-            assertEquals("XX", map["A"])
-            assertEquals("XX", map["B"])
-            assertEquals("XX", map["C"])
+            assertEquals(mapOf(
+                setOf("A", "B", "C") to "XX"
+            ), map.components)
             assertEquals("XX", newValue)
         }
 
@@ -458,20 +439,15 @@ interface TransientDisjointMapTests : DisjointMapTests {
                 )
             )
 
-            // Assume
-            assertEquals("V", map["A"])
-            assertEquals("V", map["B"])
-            assertEquals("V", map["C"])
-
             // Act
-            val newValue = map.computeIfAbsent("B") { r ->
+            val newValue = map.computeIfAbsent("B") { _ ->
                 throw IllegalStateException()
             }
 
             // Assert
-            assertEquals("V", map["A"])
-            assertEquals("V", map["B"])
-            assertEquals("V", map["C"])
+            assertEquals(mapOf(
+                setOf("A", "B", "C") to "V"
+            ), map.components)
             assertEquals("V", newValue)
         }
 

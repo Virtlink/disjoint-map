@@ -8,6 +8,11 @@ import kotlinx.collections.immutable.ImmutableMap
 interface DisjointMap<K, V>: Map<K, V> {
 
     /**
+     * Gets a set of components in this map.
+     */
+    val components: ImmutableMap<Set<K>, V>
+
+    /**
      * Finds the representative of the component that includes the given key.
      *
      * @param key the key to look for
@@ -31,7 +36,7 @@ interface DisjointMap<K, V>: Map<K, V> {
      *
      * @param key the key to look for
      * @return the keys of the component that includes the given key,
-     * including the key itself
+     * including the key itself; or an empty set when the key is not in the map
      */
     fun getComponent(key: K): Set<K>
 
@@ -40,7 +45,7 @@ interface DisjointMap<K, V>: Map<K, V> {
      *
      * @param key the key to look for
      * @return the number of keys in the component that includes the given key,
-     * including the key itself
+     * including the key itself; or 0 when the key is not in the map
      */
     fun getComponentSize(key: K): Int
 
