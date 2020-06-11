@@ -4,17 +4,17 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 /**
- * Tests the [TransientDisjointMapTests] interface.
+ * Tests the [MutableDisjointMapTests] interface.
  */
 @Suppress("ClassName", "unused", "RemoveRedundantBackticks")
-interface TransientDisjointMapTests : DisjointMapTests {
+interface MutableDisjointMapTests : DisjointMapTests {
 
-    override fun <K, V> create(initial: Map<Set<K>, V>): TransientDisjointMap<K, V>
+    override fun <K, V> create(initial: Map<Set<K>, V>): MutableDisjointMap<K, V>
 
     /**
-     * Tests the [TransientDisjointMap.union] method.
+     * Tests the [MutableDisjointMap.union] method.
      */
-    interface `union()`: TransientDisjointMapTests {
+    interface `union()`: MutableDisjointMapTests {
 
         @Test
         fun `merges components`() {
@@ -168,9 +168,9 @@ interface TransientDisjointMapTests : DisjointMapTests {
 
 
     /**
-     * Tests the [TransientDisjointMap.setComponent] method.
+     * Tests the [MutableDisjointMap.setComponent] method.
      */
-    interface `setComponent()`: TransientDisjointMapTests {
+    interface `setComponent()`: MutableDisjointMapTests {
 
         @Test
         fun `sets a new value to a new component`() {
@@ -229,9 +229,9 @@ interface TransientDisjointMapTests : DisjointMapTests {
 
 
     /**
-     * Tests the [TransientDisjointMap.compute] method.
+     * Tests the [MutableDisjointMap.compute] method.
      */
-    interface `compute()`: TransientDisjointMapTests {
+    interface `compute()`: MutableDisjointMapTests {
 
         @Test
         fun `computes a new value to a new component`() {
@@ -305,9 +305,9 @@ interface TransientDisjointMapTests : DisjointMapTests {
 
 
     /**
-     * Tests the [TransientDisjointMap.computeIfPresent] method.
+     * Tests the [MutableDisjointMap.computeIfPresent] method.
      */
-    interface `computeIfPresent()`: TransientDisjointMapTests {
+    interface `computeIfPresent()`: MutableDisjointMapTests {
 
         @Test
         fun `computes no value to a new component`() {
@@ -374,9 +374,9 @@ interface TransientDisjointMapTests : DisjointMapTests {
 
 
     /**
-     * Tests the [TransientDisjointMap.computeIfAbsent] method.
+     * Tests the [MutableDisjointMap.computeIfAbsent] method.
      */
-    interface `computeIfAbsent()`: TransientDisjointMapTests {
+    interface `computeIfAbsent()`: MutableDisjointMapTests {
 
         @Test
         fun `computes a new value to a new component`() {
@@ -443,9 +443,9 @@ interface TransientDisjointMapTests : DisjointMapTests {
     }
 
     /**
-     * Tests the [TransientDisjointMap.put] method.
+     * Tests the [MutableDisjointMap.put] method.
      */
-    interface `put()`: TransientDisjointMapTests {
+    interface `put()`: MutableDisjointMapTests {
 
         @Test
         fun `changes the value of an existing component`() {
@@ -490,9 +490,9 @@ interface TransientDisjointMapTests : DisjointMapTests {
 
 
     /**
-     * Tests the [TransientDisjointMap.putAll] method.
+     * Tests the [MutableDisjointMap.putAll] method.
      */
-    interface `putAll()`: TransientDisjointMapTests {
+    interface `putAll()`: MutableDisjointMapTests {
 
         @Test
         fun `adds all keys and values, changes existing values`() {
@@ -524,9 +524,9 @@ interface TransientDisjointMapTests : DisjointMapTests {
 
 
         /**
-     * Tests the [TransientDisjointMap.remove] method.
+     * Tests the [MutableDisjointMap.remove] method.
      */
-    interface `remove1()`: TransientDisjointMapTests {
+    interface `remove1()`: MutableDisjointMapTests {
 
         @Test
         fun `removes an existing key from a component`() {
@@ -586,9 +586,9 @@ interface TransientDisjointMapTests : DisjointMapTests {
     }
 
     /**
-     * Tests the [TransientDisjointMap.remove] method.
+     * Tests the [MutableDisjointMap.remove] method.
      */
-    interface `remove2()`: TransientDisjointMapTests {
+    interface `remove2()`: MutableDisjointMapTests {
 
         @Test
         fun `removes an existing key from a component when the value matches`() {
@@ -668,9 +668,9 @@ interface TransientDisjointMapTests : DisjointMapTests {
 
 
     /**
-     * Tests the [TransientDisjointMap.clear] method.
+     * Tests the [MutableDisjointMap.clear] method.
      */
-    interface `clear()`: TransientDisjointMapTests {
+    interface `clear()`: MutableDisjointMapTests {
 
         @Test
         fun `removes all keys and values`() {
@@ -692,9 +692,9 @@ interface TransientDisjointMapTests : DisjointMapTests {
     }
 
     /**
-     * Tests the [TransientDisjointMap.keys] property.
+     * Tests the [MutableDisjointMap.keys] property.
      */
-    interface `keys`: TransientDisjointMapTests {
+    interface `keys`: MutableDisjointMapTests {
 
         @Test
         fun `returns all keys`() {
@@ -719,9 +719,9 @@ interface TransientDisjointMapTests : DisjointMapTests {
     }
 
     /**
-     * Tests the [TransientDisjointMap.values] property.
+     * Tests the [MutableDisjointMap.values] property.
      */
-    interface `values`: TransientDisjointMapTests {
+    interface `values`: MutableDisjointMapTests {
 
         @Test
         fun `returns all keys`() {
@@ -746,9 +746,9 @@ interface TransientDisjointMapTests : DisjointMapTests {
     }
 
     /**
-     * Tests the [TransientDisjointMap.entries] property.
+     * Tests the [MutableDisjointMap.entries] property.
      */
-    interface `entries`: TransientDisjointMapTests {
+    interface `entries`: MutableDisjointMapTests {
 
         @Test
         fun `returns all key-value pairs`() {

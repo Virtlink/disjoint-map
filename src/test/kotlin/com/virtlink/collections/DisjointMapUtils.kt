@@ -4,7 +4,7 @@ fun <K, V> PersistentDisjointMap<K, V>.union(key1: K, key2: K): PersistentDisjoi
     return this.union(key1, key2, { TODO() }) { _, _ -> throw IllegalStateException() }
 }
 
-fun <K, V> TransientDisjointMap<K, V>.union(key1: K, key2: K) {
+fun <K, V> MutableDisjointMap<K, V>.union(key1: K, key2: K) {
     this.union(key1, key2, { TODO() }) { _, _ -> throw IllegalStateException() }
 }
 

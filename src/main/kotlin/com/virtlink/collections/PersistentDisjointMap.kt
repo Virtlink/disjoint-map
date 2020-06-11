@@ -7,6 +7,7 @@ import kotlinx.collections.immutable.PersistentMap
  */
 interface PersistentDisjointMap<K, V> : ImmutableDisjointMap<K, V>, PersistentMap<K, V> {
 
+
     /**
      * Associates the specified [key] with a new component with the specified [value].
      *
@@ -18,18 +19,6 @@ interface PersistentDisjointMap<K, V> : ImmutableDisjointMap<K, V>, PersistentMa
      * @return the resulting persistent map
      */
     override fun put(key: K, value: V): PersistentDisjointMap<K, V>
-
-    /**
-     * Associates the specified [keys] with a new component with the specified [value].
-     *
-     * If this map already contains some components with the specified keys,
-     * the keys are removed from the component and added to a new one.
-     *
-     * @param keys the keys
-     * @param value the value to associate with the specified [keys]
-     * @return the resulting persistent map
-     */
-    fun putComponent(keys: Set<K>, value: V): PersistentDisjointMap<K, V>
 
     /**
      * Associates the entries in the specified map [m] with this map.
@@ -73,6 +62,18 @@ interface PersistentDisjointMap<K, V> : ImmutableDisjointMap<K, V>, PersistentMa
     override fun clear(): PersistentDisjointMap<K, V>
 
 
+
+    /**
+     * Associates the specified [keys] with a new component with the specified [value].
+     *
+     * If this map already contains some components with the specified keys,
+     * the keys are removed from the component and added to a new one.
+     *
+     * @param keys the keys
+     * @param value the value to associate with the specified [keys]
+     * @return the resulting persistent map
+     */
+    fun putComponent(keys: Set<K>, value: V): PersistentDisjointMap<K, V>
 
     /**
      * Unifies the components that include the given keys.
@@ -155,12 +156,12 @@ interface PersistentDisjointMap<K, V> : ImmutableDisjointMap<K, V>, PersistentMa
 
     /**
      * A generic builder of the persistent disjoint map.
-     * The builder exposes its modification operations through the [TransientDisjointMap] interface.
+     * The builder exposes its modification operations through the [MutableDisjointMap] interface.
      *
      * Builders are reusable, that is [build] method can be called multiple times with modifications between these calls.
      * However, modifications applied do not affect previously built persistent map instances.
      */
-    interface Builder<K, V>: TransientDisjointMap<K, V>, PersistentMap.Builder<K, V> {
+    interface Builder<K, V>: MutableDisjointMap<K, V>, PersistentMap.Builder<K, V> {
 
         /**
          * Returns a persistent disjoint map with the same contents as this builder.

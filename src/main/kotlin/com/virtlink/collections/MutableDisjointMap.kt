@@ -3,7 +3,7 @@ package com.virtlink.collections
 /**
  * A transient disjoint map.
  */
-interface TransientDisjointMap<K, V> : DisjointMap<K, V>, MutableMap<K, V> {
+interface MutableDisjointMap<K, V> : DisjointMap<K, V>, MutableMap<K, V> {
 
     /**
      * Unifies the components that include the given keys.
