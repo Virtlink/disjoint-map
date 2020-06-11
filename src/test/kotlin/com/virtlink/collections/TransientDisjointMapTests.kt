@@ -11,17 +11,6 @@ interface TransientDisjointMapTests : DisjointMapTests {
 
     override fun <K, V> create(initial: Map<Set<K>, V>): TransientDisjointMap<K, V>
 
-    // put
-
-    // remove1
-    // remove2
-
-    // putAll
-    // clear
-    // keys
-    // values
-    // entries
-
     /**
      * Tests the [TransientDisjointMap.union] method.
      */
@@ -450,6 +439,343 @@ interface TransientDisjointMapTests : DisjointMapTests {
             ), map.components)
             assertEquals("V", newValue)
         }
+
+    }
+
+    /**
+     * Tests the [TransientDisjointMap.put] method.
+     */
+    interface `put()`: TransientDisjointMapTests {
+
+        @Test
+        fun `changes the value of an existing component`() {
+            // Arrange
+            val map = create(
+                mapOf(
+                    setOf("A", "B", "C") to "V"
+                )
+            )
+
+            // Act
+            val oldValue = map.put("B", "X")
+
+            // Assert
+            assertEquals(oldValue, "V")
+            assertEquals(mapOf(
+                setOf("A", "B", "C") to "X"
+            ), map.components)
+        }
+
+        @Test
+        fun `adds a new key and value`() {
+            // Arrange
+            val map = create(
+                mapOf(
+                    setOf("A", "B", "C") to "V"
+                )
+            )
+
+            // Act
+            val oldValue = map.put("X", "V2")
+
+            // Assert
+            assertNull(oldValue)
+            assertEquals(mapOf(
+                setOf("A", "B", "C") to "V",
+                setOf("X") to "V2"
+            ), map.components)
+        }
+
+    }
+
+
+    /**
+     * Tests the [TransientDisjointMap.putAll] method.
+     */
+    interface `putAll()`: TransientDisjointMapTests {
+
+        @Test
+        fun `adds all keys and values, changes existing values`() {
+            // Arrange
+            val map = create(
+                mapOf(
+                    setOf("A", "B", "C") to "V1",
+                    setOf("D", "E") to "V2"
+                )
+            )
+
+            // Act
+            val oldValue = map.putAll(mapOf(
+                "B" to "V1new",
+                "D" to "V2new",
+                "F" to "V3"
+            ))
+
+            // Assert
+            assertNull(oldValue)
+            assertEquals(mapOf(
+                setOf("A", "B", "C") to "V1",
+                setOf("D", "E") to "V2",
+                setOf("F") to "V2"
+            ), map.components)
+        }
+
+    }
+
+
+        /**
+     * Tests the [TransientDisjointMap.remove] method.
+     */
+    interface `remove1()`: TransientDisjointMapTests {
+
+        @Test
+        fun `removes an existing key from a component`() {
+            // Arrange
+            val map = create(
+                mapOf(
+                    setOf("A", "B", "C") to "V"
+                )
+            )
+
+            // Act
+            val oldValue = map.remove("B")
+
+            // Assert
+            assertEquals(oldValue, "V")
+            assertEquals(mapOf(
+                setOf("A", "C") to "V"
+            ), map.components)
+        }
+
+        @Test
+        fun `does nothing when the key does not exist`() {
+            // Arrange
+            val map = create(
+                mapOf(
+                    setOf("A", "B", "C") to "V"
+                )
+            )
+
+            // Act
+            val oldValue = map.remove("X")
+
+            // Assert
+            assertNull(oldValue)
+            assertEquals(mapOf(
+                setOf("A", "B", "C") to "V"
+            ), map.components)
+        }
+
+        @Test
+        fun `removes a component when removing the last key from a component`() {
+            // Arrange
+            val map = create(
+                mapOf(
+                    setOf("A") to "V"
+                )
+            )
+
+            // Act
+            val oldValue = map.remove("A")
+
+            // Assert
+            assertEquals(oldValue, "V")
+            assertEquals(emptyMap<String, String>(), map.components)
+        }
+
+    }
+
+    /**
+     * Tests the [TransientDisjointMap.remove] method.
+     */
+    interface `remove2()`: TransientDisjointMapTests {
+
+        @Test
+        fun `removes an existing key from a component when the value matches`() {
+            // Arrange
+            val map = create(
+                mapOf(
+                    setOf("A", "B", "C") to "V"
+                )
+            )
+
+            // Act
+            val success = map.remove("B", "V")
+
+            // Assert
+            assertTrue(success)
+            assertEquals(mapOf(
+                setOf("A", "C") to "V"
+            ), map.components)
+        }
+
+        @Test
+        fun `does nothing when the key does not exist`() {
+            // Arrange
+            val map = create(
+                mapOf(
+                    setOf("A", "B", "C") to "V"
+                )
+            )
+
+            // Act
+            val success = map.remove("X", "V")
+
+            // Assert
+            assertFalse(success)
+            assertEquals(mapOf(
+                setOf("A", "B", "C") to "V"
+            ), map.components)
+        }
+
+        @Test
+        fun `does nothing when the value does not match`() {
+            // Arrange
+            val map = create(
+                mapOf(
+                    setOf("A", "B", "C") to "V"
+                )
+            )
+
+            // Act
+            val success = map.remove("B", "X")
+
+            // Assert
+            assertFalse(success)
+            assertEquals(mapOf(
+                setOf("A", "B", "C") to "V"
+            ), map.components)
+        }
+
+        @Test
+        fun `removes a component when removing the last key and value from a component`() {
+            // Arrange
+            val map = create(
+                mapOf(
+                    setOf("A") to "V"
+                )
+            )
+
+            // Act
+            val success = map.remove("A", "V")
+
+            // Assert
+            assertTrue(success)
+            assertEquals(emptyMap<String, String>(), map.components)
+        }
+
+    }
+
+
+    /**
+     * Tests the [TransientDisjointMap.clear] method.
+     */
+    interface `clear()`: TransientDisjointMapTests {
+
+        @Test
+        fun `removes all keys and values`() {
+            // Arrange
+            val map = create(
+                mapOf(
+                    setOf("A", "B", "C") to "V1",
+                    setOf("D", "E") to "V2"
+                )
+            )
+
+            // Act
+            map.clear()
+
+            // Assert
+            assertEquals(emptyMap<String, String>(), map.components)
+        }
+
+    }
+
+    /**
+     * Tests the [TransientDisjointMap.keys] property.
+     */
+    interface `keys`: TransientDisjointMapTests {
+
+        @Test
+        fun `returns all keys`() {
+            // Arrange
+            val map = create(
+                mapOf(
+                    setOf("A", "B", "C") to "V1",
+                    setOf("D", "E") to "V2",
+                    setOf("F") to "V3"
+                )
+            )
+
+            // Act
+            val keys = map.keys
+
+            // Assert
+            assertEquals(setOf("A", "B", "C", "D", "E", "F"), keys)
+        }
+
+        // TODO: Test that mutating the keys works as expected
+
+    }
+
+    /**
+     * Tests the [TransientDisjointMap.values] property.
+     */
+    interface `values`: TransientDisjointMapTests {
+
+        @Test
+        fun `returns all keys`() {
+            // Arrange
+            val map = create(
+                mapOf(
+                    setOf("A", "B", "C") to "V1",
+                    setOf("D", "E") to "V2",
+                    setOf("F") to "V3"
+                )
+            )
+
+            // Act
+            val values = map.values
+
+            // Assert
+            assertEquals(listOf("V1", "V2", "V3"), values)
+        }
+
+        // TODO: Test that mutating the values works as expected
+
+    }
+
+    /**
+     * Tests the [TransientDisjointMap.entries] property.
+     */
+    interface `entries`: TransientDisjointMapTests {
+
+        @Test
+        fun `returns all key-value pairs`() {
+            // Arrange
+            val map = create(
+                mapOf(
+                    setOf("A", "B", "C") to "V1",
+                    setOf("D", "E") to "V2",
+                    setOf("F") to "V3"
+                )
+            )
+
+            // Act
+            val entries = map.entries
+
+            // Assert
+            assertEquals(setOf(
+                DisjointMapTests.Entry("A", "V1"),
+                DisjointMapTests.Entry("B", "V1"),
+                DisjointMapTests.Entry("C", "V1"),
+                DisjointMapTests.Entry("D", "V2"),
+                DisjointMapTests.Entry("E", "V2"),
+                DisjointMapTests.Entry("F", "V3")
+            ), entries)
+        }
+
+        // TODO: Test that mutating the entries works as expected
 
     }
 

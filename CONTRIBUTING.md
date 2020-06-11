@@ -44,4 +44,4 @@ Thank you! Please open a GitHub pull request with the patch.
 
 Thanks! :heart: :heart: :heart:
 
-Daniel A.A. Pelsmaeker
+Daniel A. A. Pelsmaeker
