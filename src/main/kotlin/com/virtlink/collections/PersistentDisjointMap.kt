@@ -61,19 +61,37 @@ interface PersistentDisjointMap<K, V> : ImmutableDisjointMap<K, V>, PersistentMa
      */
     override fun clear(): PersistentDisjointMap<K, V>
 
-
+    /**
+     * Sets the value associated with the component that includes the given key.
+     *
+     * @param key the key to look for
+     * @param value the value to associate with the component
+     * @return the resulting persistent map
+     */
+    fun setComponent(key: K, value: V): PersistentDisjointMap<K, V>
 
     /**
      * Associates the specified [keys] with a new component with the specified [value].
      *
-     * If this map already contains some components with the specified keys,
-     * the keys are removed from the component and added to a new one.
+     * If any of the keys are already part of a component in this map,
+     * the keys are removed from the component and added to the new one.
      *
      * @param keys the keys
      * @param value the value to associate with the specified [keys]
      * @return the resulting persistent map
      */
     fun putComponent(keys: Set<K>, value: V): PersistentDisjointMap<K, V>
+
+    /**
+     * Adds the specified components to this map.
+     *
+     * If any of the keys are already part of a component in this map,
+     * the keys are removed from the component and added to the new one.
+     *
+     * @param map a map from a set of keys to a value
+     * @return the resulting persistent map
+     */
+    fun putAllComponents(map: Map<Set<K>, V>): PersistentDisjointMap<K, V>
 
     /**
      * Unifies the components that include the given keys.
@@ -96,15 +114,6 @@ interface PersistentDisjointMap<K, V> : ImmutableDisjointMap<K, V>, PersistentMa
      * @throws NoSuchElementException the key is not in the map
      */
     fun disunion(key: K): PersistentDisjointMap<K, V>
-
-    /**
-     * Sets the value associated with the component that includes the given key.
-     *
-     * @param key the key to look for
-     * @param value the value to associate with the component
-     * @return the resulting persistent map
-     */
-    fun setComponent(key: K, value: V): PersistentDisjointMap<K, V>
 
     /**
      * Removes the specified [key] from this map.

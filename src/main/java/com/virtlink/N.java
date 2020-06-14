@@ -22,9 +22,27 @@ public final class N {
      *
      * @param value the value of type {@code T?}
      * @param <T> the type of the value
-     * @return the value of type {@code T}
+     * @return the value of type {@code T}, which may be null if {@code T} is a nullable type
      */
     @SuppressWarnings("ConstantConditions")
     public static <T> T of(@Nullable T value) { return value; }
+
+    /**
+     * Satisfies the Kotlin type checker by assuming a value
+     * is not {@code null} without explicitly checking it.
+     *
+     * For example, if you know a value can never be {@code null} but it
+     * has a nullable type, then you can use this method instead of a
+     * non-null assertion (!!) operator in Kotlin. This method does not
+     * explicitly check nullness.
+     *
+     * @param value the value of type {@code T?}
+     * @param <T> the type of the value
+     * @return the value of type {@code T}; which should never be {@code null}
+     */
+    public static <T> T assumeNotNull(@Nullable T value) {
+        assert value != null : "Value should never be null.";
+        return value;
+    }
 
 }
