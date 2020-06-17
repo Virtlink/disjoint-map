@@ -7,7 +7,6 @@ import kotlinx.collections.immutable.PersistentMap
  */
 interface PersistentDisjointMap<K, V> : ImmutableDisjointMap<K, V>, PersistentMap<K, V> {
 
-
     /**
      * Associates the specified [key] with a new component with the specified [value].
      *
