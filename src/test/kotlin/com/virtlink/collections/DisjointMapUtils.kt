@@ -1,5 +1,9 @@
 package com.virtlink.collections
 
+fun <K, V> createMap(components: Iterable<Pair<Set<K>, V>>): ImmutableDisjointMap<K, V> = object: ImmutableDisjointMap<K, V> {
+
+}
+
 fun <K, V> PersistentDisjointMap<K, V>.union(key1: K, key2: K): PersistentDisjointMap<K, V> {
     return this.union(key1, key2, { TODO() }) { _, _ -> throw IllegalStateException() }
 }

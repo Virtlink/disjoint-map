@@ -21,8 +21,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
             // Arrange
             val map = create(
                 mapOf(
-                    setOf("A", "B", "C") to "V",
-                    setOf("D", "E", "F") to null
+                    Component.of(setOf("A", "B", "C") to "V"),
+                    Component.of(setOf("D", "E", "F") to null)
                 )
             )
 
@@ -56,8 +56,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
             // Arrange
             val map = create(
                 mapOf(
-                    setOf("A", "B", "C") to "V",
-                    setOf("D", "E") to null
+                    Component.of(setOf("A", "B", "C") to "V"),
+                    Component.of(setOf("D", "E") to null)
                 )
             )
 
@@ -92,7 +92,7 @@ interface MutableDisjointMapTests : DisjointMapTests {
             // Arrange
             val map = create<String, String?>(
                 mapOf(
-                    setOf("A", "B", "C", "D", "E", "F") to "V"
+                    Component.of(setOf("A", "B", "C", "D", "E", "F") to "V")
                 )
             )
 
@@ -125,8 +125,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
             // Arrange
             val map = create(
                 mapOf(
-                    setOf("A", "B", "C") to "V1",
-                    setOf("D", "E") to "V2"
+                    Component.of(setOf("A", "B", "C") to "V1"),
+                    Component.of(setOf("D", "E") to "V2")
                 )
             )
 
@@ -147,8 +147,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
             // Arrange
             val map = create<String, String?>(
                 mapOf(
-                    setOf("A", "B", "C") to "V1",
-                    setOf("D", "E") to "V2"
+                    Component.of(setOf("A", "B", "C") to "V1"),
+                    Component.of(setOf("D", "E") to "V2")
                 )
             )
 
@@ -193,7 +193,7 @@ interface MutableDisjointMapTests : DisjointMapTests {
             // Arrange
             val map = create(
                 mapOf(
-                    setOf("A", "B", "C") to null as String?
+                    Component.of(setOf("A", "B", "C") to null as String?)
                 )
             )
 
@@ -211,8 +211,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
         fun `replaces the value of an existing component`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A", "B", "C") to "V"
+                listOf(
+                    Component.of(setOf("A", "B", "C") to "V")
                 )
             )
 
@@ -246,8 +246,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
             }
 
             // Assert
-            assertEquals(mapOf(
-                setOf("B") to "XX"
+            assertEquals(listOf(
+                Component.of(setOf("B") to "XX")
             ), map.components)
             assertEquals("XX", newValue)
         }
@@ -257,8 +257,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
         fun `computes a new value to an existing component with no value`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A", "B", "C") to null as String?
+                listOf(
+                    Component.of(setOf("A", "B", "C") to null as String?)
                 )
             )
 
@@ -270,8 +270,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
             }
 
             // Assert
-            assertEquals(mapOf(
-                setOf("A", "B", "C") to "XX"
+            assertEquals(listOf(
+                Component.of(setOf("A", "B", "C") to "XX")
             ), map.components)
             assertEquals("XX", newValue)
         }
@@ -280,8 +280,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
         fun `computes a new value to an existing component with an existing value`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A", "B", "C") to "V"
+                listOf(
+                    Component.of(setOf("A", "B", "C") to "V")
                 )
             )
 
@@ -293,8 +293,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
             }
 
             // Assert
-            assertEquals(mapOf(
-                setOf("A", "B", "C") to "XX"
+            assertEquals(listOf(
+                Component.of(setOf("A", "B", "C") to "XX")
             ), map.components)
             assertEquals("XX", newValue)
         }
@@ -329,8 +329,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
         fun `computes no value to an existing component with no value`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A", "B", "C") to null as String?
+                listOf(
+                    Component.of(setOf("A", "B", "C") to null as String?)
                 )
             )
 
@@ -340,8 +340,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
             }
 
             // Assert
-            assertEquals(mapOf(
-                setOf("A", "B", "C") to null
+            assertEquals(listOf(
+                Component.of(setOf("A", "B", "C") to null)
             ), map.components)
             assertEquals(null, newValue)
         }
@@ -350,8 +350,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
         fun `computes a new value to an existing component with an existing value`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A", "B", "C") to "V"
+                listOf(
+                    Component.of(setOf("A", "B", "C") to "V")
                 )
             )
 
@@ -363,8 +363,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
             }
 
             // Assert
-            assertEquals(mapOf(
-                setOf("A", "B", "C") to "XX"
+            assertEquals(listOf(
+                Component.of(setOf("A", "B", "C") to "XX")
             ), map.components)
             assertEquals("XX", newValue)
         }
@@ -390,8 +390,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
             }
 
             // Assert
-            assertEquals(mapOf(
-                setOf("B") to "XX"
+            assertEquals(listOf(
+                Component.of(setOf("B") to "XX")
             ), map.components)
             assertEquals("XX", newValue)
         }
@@ -401,8 +401,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
         fun `computes a new value to an existing component with no value`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A", "B", "C") to null as String?
+                listOf(
+                    Component.of(setOf("A", "B", "C") to null as String?)
                 )
             )
 
@@ -413,8 +413,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
             }
 
             // Assert
-            assertEquals(mapOf(
-                setOf("A", "B", "C") to "XX"
+            assertEquals(listOf(
+                Component.of(setOf("A", "B", "C") to "XX")
             ), map.components)
             assertEquals("XX", newValue)
         }
@@ -423,8 +423,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
         fun `computes no value to an existing component with an existing value`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A", "B", "C") to "V"
+                listOf(
+                    Component.of(setOf("A", "B", "C") to "V")
                 )
             )
 
@@ -434,8 +434,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
             }
 
             // Assert
-            assertEquals(mapOf(
-                setOf("A", "B", "C") to "V"
+            assertEquals(listOf(
+                Component.of(setOf("A", "B", "C") to "V")
             ), map.components)
             assertEquals("V", newValue)
         }
@@ -451,8 +451,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
         fun `changes the value of an existing component`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A", "B", "C") to "V"
+                listOf(
+                    Component.of(setOf("A", "B", "C") to "V")
                 )
             )
 
@@ -461,8 +461,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
 
             // Assert
             assertEquals(oldValue, "V")
-            assertEquals(mapOf(
-                setOf("A", "B", "C") to "X"
+            assertEquals(listOf(
+                Component.of(setOf("A", "B", "C") to "X")
             ), map.components)
         }
 
@@ -470,8 +470,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
         fun `adds a new key and value`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A", "B", "C") to "V"
+                listOf(
+                    Component.of(setOf("A", "B", "C") to "V")
                 )
             )
 
@@ -480,9 +480,9 @@ interface MutableDisjointMapTests : DisjointMapTests {
 
             // Assert
             assertNull(oldValue)
-            assertEquals(mapOf(
-                setOf("A", "B", "C") to "V",
-                setOf("X") to "V2"
+            assertEquals(listOf(
+                Component.of(setOf("A", "B", "C") to "V"),
+                Component.of(setOf("X") to "V2")
             ), map.components)
         }
 
@@ -498,9 +498,9 @@ interface MutableDisjointMapTests : DisjointMapTests {
         fun `adds all keys and values, changes existing values`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A", "B", "C") to "V1",
-                    setOf("D", "E") to "V2"
+                listOf(
+                    Component.of(setOf("A", "B", "C") to "V1"),
+                    Component.of(setOf("D", "E") to "V2")
                 )
             )
 
@@ -513,10 +513,10 @@ interface MutableDisjointMapTests : DisjointMapTests {
 
             // Assert
             assertNull(oldValue)
-            assertEquals(mapOf(
-                setOf("A", "B", "C") to "V1",
-                setOf("D", "E") to "V2",
-                setOf("F") to "V2"
+            assertEquals(listOf(
+                Component.of(setOf("A", "B", "C") to "V1"),
+                Component.of(setOf("D", "E") to "V2"),
+                Component.of(setOf("F") to "V2")
             ), map.components)
         }
 
@@ -532,8 +532,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
         fun `removes an existing key from a component`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A", "B", "C") to "V"
+                listOf(
+                    Component.of(setOf("A", "B", "C") to "V")
                 )
             )
 
@@ -542,8 +542,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
 
             // Assert
             assertEquals(oldValue, "V")
-            assertEquals(mapOf(
-                setOf("A", "C") to "V"
+            assertEquals(listOf(
+                Component.of(setOf("A", "C") to "V")
             ), map.components)
         }
 
@@ -551,8 +551,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
         fun `does nothing when the key does not exist`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A", "B", "C") to "V"
+                listOf(
+                    Component.of(setOf("A", "B", "C") to "V")
                 )
             )
 
@@ -561,8 +561,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
 
             // Assert
             assertNull(oldValue)
-            assertEquals(mapOf(
-                setOf("A", "B", "C") to "V"
+            assertEquals(listOf(
+                Component.of(setOf("A", "B", "C") to "V")
             ), map.components)
         }
 
@@ -570,8 +570,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
         fun `removes a component when removing the last key from a component`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A") to "V"
+                listOf(
+                    Component.of(setOf("A") to "V")
                 )
             )
 
@@ -594,8 +594,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
         fun `removes an existing key from a component when the value matches`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A", "B", "C") to "V"
+                listOf(
+                    Component.of(setOf("A", "B", "C") to "V")
                 )
             )
 
@@ -604,8 +604,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
 
             // Assert
             assertTrue(success)
-            assertEquals(mapOf(
-                setOf("A", "C") to "V"
+            assertEquals(listOf(
+                Component.of(setOf("A", "C") to "V")
             ), map.components)
         }
 
@@ -613,8 +613,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
         fun `does nothing when the key does not exist`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A", "B", "C") to "V"
+                listOf(
+                    Component.of(setOf("A", "B", "C") to "V")
                 )
             )
 
@@ -623,8 +623,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
 
             // Assert
             assertFalse(success)
-            assertEquals(mapOf(
-                setOf("A", "B", "C") to "V"
+            assertEquals(listOf(
+                Component.of(setOf("A", "B", "C") to "V")
             ), map.components)
         }
 
@@ -632,8 +632,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
         fun `does nothing when the value does not match`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A", "B", "C") to "V"
+                listOf(
+                    Component.of(setOf("A", "B", "C") to "V")
                 )
             )
 
@@ -642,8 +642,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
 
             // Assert
             assertFalse(success)
-            assertEquals(mapOf(
-                setOf("A", "B", "C") to "V"
+            assertEquals(listOf(
+                Component.of(setOf("A", "B", "C") to "V")
             ), map.components)
         }
 
@@ -651,8 +651,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
         fun `removes a component when removing the last key and value from a component`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A") to "V"
+                listOf(
+                    Component.of(setOf("A") to "V")
                 )
             )
 
@@ -676,9 +676,9 @@ interface MutableDisjointMapTests : DisjointMapTests {
         fun `removes all keys and values`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A", "B", "C") to "V1",
-                    setOf("D", "E") to "V2"
+                listOf(
+                    Component.of(setOf("A", "B", "C") to "V1"),
+                    Component.of(setOf("D", "E") to "V2")
                 )
             )
 
@@ -700,10 +700,10 @@ interface MutableDisjointMapTests : DisjointMapTests {
         fun `returns all keys`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A", "B", "C") to "V1",
-                    setOf("D", "E") to "V2",
-                    setOf("F") to "V3"
+                listOf(
+                    Component.of(setOf("A", "B", "C") to "V1"),
+                    Component.of(setOf("D", "E") to "V2"),
+                    Component.of(setOf("F") to "V3")
                 )
             )
 
@@ -727,10 +727,10 @@ interface MutableDisjointMapTests : DisjointMapTests {
         fun `returns all keys`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A", "B", "C") to "V1",
-                    setOf("D", "E") to "V2",
-                    setOf("F") to "V3"
+                listOf(
+                    Component.of(setOf("A", "B", "C") to "V1"),
+                    Component.of(setOf("D", "E") to "V2"),
+                    Component.of(setOf("F") to "V3")
                 )
             )
 
@@ -754,10 +754,10 @@ interface MutableDisjointMapTests : DisjointMapTests {
         fun `returns all key-value pairs`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A", "B", "C") to "V1",
-                    setOf("D", "E") to "V2",
-                    setOf("F") to "V3"
+                listOf(
+                    Component.of(setOf("A", "B", "C") to "V1"),
+                    Component.of(setOf("D", "E") to "V2"),
+                    Component.of(setOf("F") to "V3")
                 )
             )
 
@@ -778,5 +778,7 @@ interface MutableDisjointMapTests : DisjointMapTests {
         // TODO: Test that mutating the entries works as expected
 
     }
+
+
 
 }

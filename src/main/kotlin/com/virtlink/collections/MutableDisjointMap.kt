@@ -86,9 +86,10 @@ interface MutableDisjointMap<K, V> : DisjointMap<K, V>, MutableMap<K, V> {
      * Any keys in the component that are already part of other components
      * are removed from those components.
      *
-     * @param component the component to put
+     * @param keys the keys of the component to put
+     * @param value the value of the component to put
      */
-    fun putComponent(component: MutableComponent<K, V>)
+    fun putComponent(keys: Iterable<K>, value: V)
 
     /**
      * Puts the given components.
@@ -96,9 +97,9 @@ interface MutableDisjointMap<K, V> : DisjointMap<K, V>, MutableMap<K, V> {
      * Any keys in a component that are already part of other components
      * are removed from those components.
      *
-     * @param components the components to put
+     * @param map the map of components to put
      */
-    fun putAllComponents(components: Iterable<MutableComponent<K, V>>)
+    fun putAllComponents(map: DisjointMap<K, V>)
 
     /**
      * Unifies the components that include the given keys.

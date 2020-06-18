@@ -78,10 +78,11 @@ interface PersistentDisjointMap<K, V> : ImmutableDisjointMap<K, V>, PersistentMa
      * Any keys in the component that are already part of other components
      * are removed from those components.
      *
-     * @param component the component to put
+     * @param keys the keys of the component to put
+     * @param value the value of the component to put
      * @return the resulting persistent map
      */
-    fun putComponent(component: DisjointMap.Component<K, V>): PersistentDisjointMap<K, V>
+    fun putComponent(keys: Iterable<K>, value: V): PersistentDisjointMap<K, V>
 
     /**
      * Puts the given components.
@@ -89,10 +90,10 @@ interface PersistentDisjointMap<K, V> : ImmutableDisjointMap<K, V>, PersistentMa
      * Any keys in a component that are already part of other components
      * are removed from those components.
      *
-     * @param components the components to put
+     * @param map the map of components to put
      * @return the resulting persistent map
      */
-    fun putAllComponents(components: Iterable<DisjointMap.Component<K, V>>): PersistentDisjointMap<K, V>
+    fun putAllComponents(map: DisjointMap<K, V>): PersistentDisjointMap<K, V>
 
     /**
      * Unifies the components that include the given keys.
