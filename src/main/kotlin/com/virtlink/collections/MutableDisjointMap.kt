@@ -5,15 +5,7 @@ package com.virtlink.collections
  */
 interface MutableDisjointMap<K, V> : DisjointMap<K, V>, MutableMap<K, V> {
 
-    /**
-     * Gets a mutable set of components in this map.
-     *
-     * Changes to the mutable set or its components are reflected in this disjoint map.
-     *
-     * @return the components in this map
-     */
-    override val components: MutableSet<MutableDisjointMap.MutableComponent<K, V>>
-
+    // MutableMap<K, V>
     /**
      * Makes a new component with the specified key and value.
      *
@@ -30,7 +22,7 @@ interface MutableDisjointMap<K, V> : DisjointMap<K, V>, MutableMap<K, V> {
     /**
      * Makes new components with the specified keys and values.
      *
-     * If a key is part of an existing component, it is disunioned.
+     * If a key is part of an existing component, it is disunified.
      * If a key is not part of the map, it is added.
      *
      * @param from the map of keys and values to set
@@ -69,6 +61,45 @@ interface MutableDisjointMap<K, V> : DisjointMap<K, V>, MutableMap<K, V> {
 
 
 
+    // MutableMap<K, V>
+    /**
+     * Gets a mutable set of components in this map.
+     *
+     * Changes to the mutable set or its components are reflected in this disjoint map.
+     *
+     * @return the components in this map
+     */
+    override val components: MutableSet<MutableComponent<K, V>>
+
+    /**
+     * Gets the mutable component that includes the given key.
+     *
+     * @param key the key to look for
+     * @return the mutable component that includes the given key;
+     * or `null` when the key is not in the map
+     */
+    override fun getComponent(key: K): MutableComponent<K, V>?
+
+    /**
+     * Puts the given component.
+     *
+     * Any keys in the component that are already part of other components
+     * are removed from those components.
+     *
+     * @param component the component to put
+     */
+    fun putComponent(component: MutableComponent<K, V>)
+
+    /**
+     * Puts the given components.
+     *
+     * Any keys in a component that are already part of other components
+     * are removed from those components.
+     *
+     * @param components the components to put
+     */
+    fun putAllComponents(components: Iterable<MutableComponent<K, V>>)
+
     /**
      * Unifies the components that include the given keys.
      *
@@ -80,25 +111,14 @@ interface MutableDisjointMap<K, V> : DisjointMap<K, V>, MutableMap<K, V> {
     fun union(key1: K, key2: K, default: () -> V, unify: (V, V) -> V)
 
     /**
-     * Disunifies the given key from the given component.
+     * Disunifies the given key from its component.
      *
      * This will create a new component with the given key and the value of the original component.
+     * When the key doesn't exist, nothing happens.
      *
      * @param key the key to disunify
-     * @param component the component from which to disunify the key
      */
-    fun disunion(key: K, component: K)
-
-
-//    /**
-//     * Removes the given element from the map.
-//     *
-//     * When the removed key was the final key in the component, the component is removed.
-//     *
-//     * @param key the element to remove
-//     * @return a pair of the new representative key (or `null` when the component was removed) and its associated value
-//     */
-//    fun removeKey(key: K): Pair<K?, V>
+    fun disunion(key: K)
 
     /**
      * Computes the value associated with the component that includes the given key.

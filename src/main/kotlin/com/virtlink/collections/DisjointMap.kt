@@ -10,7 +10,7 @@ interface DisjointMap<K, out V>: Map<K, V> {
      *
      * @return the components in this map
      */
-    val components: Set<DisjointMap.Component<K, V>>
+    val components: Set<Component<K, V>>
 
     /**
      * Finds the representative of the component that includes the given key.
