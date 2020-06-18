@@ -67,6 +67,16 @@ interface DisjointMap<K, out V>: Map<K, V> {
          * @return the value of the component
          */
         val value: V
+
+        /**
+         * Gets the keys of this component.
+         */
+        operator fun component1() = keys
+
+        /**
+         * Gets the value of this component.
+         */
+        operator fun component2() = value
     }
 
 }

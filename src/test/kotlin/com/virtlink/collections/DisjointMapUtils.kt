@@ -18,3 +18,10 @@ fun <K, V> Iterable<Map.Entry<K, V>>.toEntrySet(): Set<DisjointMapTests.Entry<K,
 fun <K, V> Sequence<Map.Entry<K, V>>.toEntrySet(): Set<DisjointMapTests.Entry<K, V>> {
     return this.map { DisjointMapTests.Entry.of(it) }.toSet()
 }
+
+fun <T> Iterable<T>.iterateToSet(): Set<T> {
+    return this.iterator().asSequence().toSet()
+}
+fun <T> Iterable<T>.iterateToList(): List<T> {
+    return this.iterator().asSequence().toList()
+}

@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 @Suppress("ClassName", "unused", "RemoveRedundantBackticks")
 interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
 
-    override fun <K, V> create(initial: Map<Set<K>, V>): PersistentDisjointMap<K, V>
+    override fun <K, V> create(initial: Collection<DisjointMap.Component<K, V>>): PersistentDisjointMap<K, V>
 
     /**
      * Tests the [PersistentDisjointMap.put] method.

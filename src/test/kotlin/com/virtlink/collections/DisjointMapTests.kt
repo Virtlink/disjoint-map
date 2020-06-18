@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 @Suppress("ClassName", "unused", "RemoveRedundantBackticks")
 interface DisjointMapTests {
 
-    fun <K, V> create(initial: Map<Set<K>, V> = emptyMap()): DisjointMap<K, V>
+    fun <K, V> create(initial: Collection<DisjointMap.Component<K, V>> = emptyList()): DisjointMap<K, V>
 
 
     /**
@@ -29,10 +29,10 @@ interface DisjointMapTests {
         fun `returns number of representative if each has its own value`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A") to "Va",
-                    setOf("B") to "V",
-                    setOf("C") to "V"
+                listOf(
+                    Component.of(setOf("A") to "Va"),
+                    Component.of(setOf("B") to "V"),
+                    Component.of(setOf("C") to "V")
                 )
             )
 
@@ -44,10 +44,10 @@ interface DisjointMapTests {
         fun `returns number of keys`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A1", "A2", "A3") to "Va",
-                    setOf("B1", "B2") to "V",
-                    setOf("C1") to "V"
+                listOf(
+                    Component.of(setOf("A1", "A2", "A3") to "Va"),
+                    Component.of(setOf("B1", "B2") to "V"),
+                    Component.of(setOf("C1") to "V")
                 )
             )
 
@@ -73,10 +73,10 @@ interface DisjointMapTests {
         fun `returns false for map where each representative has its own value `() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A") to "Va",
-                    setOf("B") to "V",
-                    setOf("C") to "V"
+                listOf(
+                    Component.of(setOf("A") to "Va"),
+                    Component.of(setOf("B") to "V"),
+                    Component.of(setOf("C") to "V")
                 )
             )
 
@@ -88,10 +88,10 @@ interface DisjointMapTests {
         fun `returns false when there are multiple keys`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A1", "A2", "A3") to "Va",
-                    setOf("B1", "B2") to "V",
-                    setOf("C1") to "V"
+                listOf(
+                    Component.of(setOf("A1", "A2", "A3") to "Va"),
+                    Component.of(setOf("B1", "B2") to "V"),
+                    Component.of(setOf("C1") to "V")
                 )
             )
 
@@ -120,10 +120,10 @@ interface DisjointMapTests {
         fun `returns false for non-existing key`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A1", "A2", "A3") to "Va",
-                    setOf("B1", "B2") to "V",
-                    setOf("C1") to "V"
+                listOf(
+                    Component.of(setOf("A1", "A2", "A3") to "Va"),
+                    Component.of(setOf("B1", "B2") to "V"),
+                    Component.of(setOf("C1") to "V")
                 )
             )
 
@@ -138,10 +138,10 @@ interface DisjointMapTests {
         fun `returns true for representative`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A1", "A2", "A3") to "Va",
-                    setOf("B1", "B2") to "V",
-                    setOf("C1") to "V"
+                listOf(
+                    Component.of(setOf("A1", "A2", "A3") to "Va"),
+                    Component.of(setOf("B1", "B2") to "V"),
+                    Component.of(setOf("C1") to "V")
                 )
             )
 
@@ -159,10 +159,10 @@ interface DisjointMapTests {
         fun `returns true for non-representative`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A1", "A2", "A3") to "Va",
-                    setOf("B1", "B2") to "V",
-                    setOf("C1") to "V"
+                listOf(
+                    Component.of(setOf("A1", "A2", "A3") to "Va"),
+                    Component.of(setOf("B1", "B2") to "V"),
+                    Component.of(setOf("C1") to "V")
                 )
             )
 
@@ -197,10 +197,10 @@ interface DisjointMapTests {
         fun `returns false for non-existing value`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A1", "A2", "A3") to "Va",
-                    setOf("B1", "B2") to "V",
-                    setOf("C1") to "V"
+                listOf(
+                    Component.of(setOf("A1", "A2", "A3") to "Va"),
+                    Component.of(setOf("B1", "B2") to "V"),
+                    Component.of(setOf("C1") to "V")
                 )
             )
 
@@ -215,10 +215,10 @@ interface DisjointMapTests {
         fun `returns true for value that occurs once`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A1", "A2", "A3") to "Va",
-                    setOf("B1", "B2") to "V",
-                    setOf("C1") to "V"
+                listOf(
+                    Component.of(setOf("A1", "A2", "A3") to "Va"),
+                    Component.of(setOf("B1", "B2") to "V"),
+                    Component.of(setOf("C1") to "V")
                 )
             )
 
@@ -233,10 +233,10 @@ interface DisjointMapTests {
         fun `returns true for value that occurs multiple times`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A1", "A2", "A3") to "Va",
-                    setOf("B1", "B2") to "V",
-                    setOf("C1") to "V"
+                listOf(
+                    Component.of(setOf("A1", "A2", "A3") to "Va"),
+                    Component.of(setOf("B1", "B2") to "V"),
+                    Component.of(setOf("C1") to "V")
                 )
             )
 
@@ -256,8 +256,8 @@ interface DisjointMapTests {
         fun `returns null when key not found`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A", "B", "C") to "V"
+                listOf(
+                    Component.of(setOf("A", "B", "C") to "V")
                 )
             )
 
@@ -272,8 +272,8 @@ interface DisjointMapTests {
         fun `returns value when key found as representative`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A", "B", "C") to "V"
+                listOf(
+                    Component.of(setOf("A", "B", "C") to "V")
                 )
             )
 
@@ -291,8 +291,8 @@ interface DisjointMapTests {
         fun `returns value when key found not as representative`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A", "B", "C") to "V"
+                listOf(
+                    Component.of(setOf("A", "B", "C") to "V")
                 )
             )
 
@@ -310,8 +310,8 @@ interface DisjointMapTests {
         fun `returns null when value is null`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A", "B", "C") to null as String?
+                listOf(
+                    Component.of(setOf("A", "B", "C") to null as String?)
                 )
             )
 
@@ -335,8 +335,8 @@ interface DisjointMapTests {
         fun `returns default when key not found`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A", "B", "C") to "V"
+                listOf(
+                    Component.of(setOf("A", "B", "C") to "V")
                 )
             )
 
@@ -351,8 +351,8 @@ interface DisjointMapTests {
         fun `returns value when key found`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A", "B", "C") to "V"
+                listOf(
+                    Component.of(setOf("A", "B", "C") to "V")
                 )
             )
 
@@ -370,8 +370,8 @@ interface DisjointMapTests {
         fun `returns null when value is null`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A", "B", "C") to null as String?
+                listOf(
+                    Component.of(setOf("A", "B", "C") to null as String?)
                 )
             )
 
@@ -411,10 +411,10 @@ interface DisjointMapTests {
         fun `returns representative keys`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A") to "Va",
-                    setOf("B") to "V",
-                    setOf("C") to "V"
+                listOf(
+                    Component.of(setOf("A") to "Va"),
+                    Component.of(setOf("B") to "V"),
+                    Component.of(setOf("C") to "V")
                 )
             )
 
@@ -436,10 +436,10 @@ interface DisjointMapTests {
         fun `returns all keys`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A1", "A2", "A3") to "Va",
-                    setOf("B1", "B2") to "V",
-                    setOf("C1") to "V"
+                listOf(
+                    Component.of(setOf("A1", "A2", "A3") to "Va"),
+                    Component.of(setOf("B1", "B2") to "V"),
+                    Component.of(setOf("C1") to "V")
                 )
             )
 
@@ -461,10 +461,10 @@ interface DisjointMapTests {
         fun `returns keys that have null value`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A1", "A2", "A3") to "Va",
-                    setOf("B1", "B2") to null,
-                    setOf("C1") to "V"
+                listOf(
+                    Component.of(setOf("A1", "A2", "A3") to "Va"),
+                    Component.of(setOf("B1", "B2") to null),
+                    Component.of(setOf("C1") to "V")
                 )
             )
 
@@ -508,10 +508,10 @@ interface DisjointMapTests {
         fun `returns all values`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A1", "A2", "A3") to "Va",
-                    setOf("B1", "B2") to "V",
-                    setOf("C1") to "V"
+                listOf(
+                    Component.of(setOf("A1", "A2", "A3") to "Va"),
+                    Component.of(setOf("B1", "B2") to "V"),
+                    Component.of(setOf("C1") to "V")
                 )
             )
 
@@ -534,10 +534,10 @@ interface DisjointMapTests {
         fun `returns null values`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A1", "A2", "A3") to "Va",
-                    setOf("B1", "B2") to null,
-                    setOf("C1") to "V"
+                listOf(
+                    Component.of(setOf("A1", "A2", "A3") to "Va"),
+                    Component.of(setOf("B1", "B2") to null),
+                    Component.of(setOf("C1") to "V")
                 )
             )
 
@@ -581,10 +581,10 @@ interface DisjointMapTests {
         fun `returns representative keys and associated values`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A") to "Va",
-                    setOf("B") to "V",
-                    setOf("C") to "V"
+                listOf(
+                    Component.of(setOf("A") to "Va"),
+                    Component.of(setOf("B") to "V"),
+                    Component.of(setOf("C") to "V")
                 )
             )
 
@@ -608,10 +608,10 @@ interface DisjointMapTests {
         fun `returns all keys and associated values`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A1", "A2", "A3") to "Va",
-                    setOf("B1", "B2") to "V",
-                    setOf("C1") to "V"
+                listOf(
+                    Component.of(setOf("A1", "A2", "A3") to "Va"),
+                    Component.of(setOf("B1", "B2") to "V"),
+                    Component.of(setOf("C1") to "V")
                 )
             )
 
@@ -638,10 +638,10 @@ interface DisjointMapTests {
         fun `returns entries that have null value`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A1", "A2", "A3") to "Va",
-                    setOf("B1", "B2") to null,
-                    setOf("C1") to "V"
+                listOf(
+                    Component.of(setOf("A1", "A2", "A3") to "Va"),
+                    Component.of(setOf("B1", "B2") to null),
+                    Component.of(setOf("C1") to "V")
                 )
             )
 
@@ -680,65 +680,65 @@ interface DisjointMapTests {
             val components = map.components
 
             // Assert
-            assertEquals(emptyMap<Set<String>, String>(), components)
-            assertEquals(emptyMap<Set<String>, String>(), components.iterator().asSequence().toMap())
+            assertEquals(emptySet<Component<String, String>>(), components)
+            assertEquals(emptySet<Component<String, String>>(), components.iterateToSet())
             assertEquals(0, components.size)
         }
 
         @Test
         fun `returns representative keys and associated values`() {
             // Arrange
-            val expectedMap = mapOf(
-                setOf("A") to "Va",
-                setOf("B") to "V",
-                setOf("C") to "V"
+            val expectedComponents = listOf(
+                Component.of(setOf("A") to "Va"),
+                Component.of(setOf("B") to "V"),
+                Component.of(setOf("C") to "V")
             )
-            val map = create(expectedMap)
+            val map = create(expectedComponents)
 
             // Act
             val components = map.components
 
             // Assert
-            assertEquals(expectedMap, components)
-            assertEquals(expectedMap, components.iterator().asSequence().toMap())
+            assertEquals(expectedComponents, components)
+            assertEquals(expectedComponents, components.iterateToSet())
             assertEquals(3, components.size)
         }
 
         @Test
         fun `returns all keys and associated values`() {
             // Arrange
-            val expectedMap = mapOf(
-                setOf("A1", "A2", "A3") to "Va",
-                setOf("B1", "B2") to "V",
-                setOf("C1") to "V"
+            val expectedComponents = listOf(
+                Component.of(setOf("A1", "A2", "A3") to "Va"),
+                Component.of(setOf("B1", "B2") to "V"),
+                Component.of(setOf("C1") to "V")
             )
-            val map = create(expectedMap)
+            val map = create(expectedComponents)
 
             // Act
             val components = map.components
 
             // Assert
-            assertEquals(expectedMap, components)
-            assertEquals(expectedMap, components.iterator().asSequence().toMap())
+            assertEquals(expectedComponents, components)
+            assertEquals(expectedComponents, components.iterateToSet())
             assertEquals(6, components.size)
         }
 
         @Test
         fun `returns components that have null value`() {
             // Arrange
-            val expectedMap = mapOf(
-                setOf("A1", "A2", "A3") to "Va",
-                setOf("B1", "B2") to null,
-                setOf("C1") to "V"
+            val expectedComponents = listOf(
+                Component.of(setOf("A1", "A2", "A3") to "Va"),
+                Component.of(setOf("B1", "B2") to null),
+                Component.of(setOf("C1") to "V")
             )
-            val map = create(expectedMap)
+            val map = create(expectedComponents)
 
             // Act
             val components = map.components
 
             // Assert
-            assertEquals(expectedMap, components)
-            assertEquals(expectedMap, components.iterator().asSequence().toMap())
+            assertEquals(expectedComponents, components)
+            assertEquals(expectedComponents, components.iterateToSet())
             assertEquals(6, components.size)
         }
 
@@ -766,8 +766,8 @@ interface DisjointMapTests {
         fun `returns same element when found as representative`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A") to "V"
+                listOf(
+                    Component.of(setOf("A") to "V")
                 )
             )
 
@@ -782,8 +782,8 @@ interface DisjointMapTests {
         fun `returns representative`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A", "B", "C") to "V"
+                listOf(
+                    Component.of(setOf("A", "B", "C") to "V")
                 )
             )
 
@@ -832,8 +832,8 @@ interface DisjointMapTests {
         fun `returns true when comparing same elements that are representatives`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A") to "V"
+                listOf(
+                    Component.of(setOf("A") to "V")
                 )
             )
 
@@ -849,9 +849,9 @@ interface DisjointMapTests {
         fun `returns false when comparing different elements that are representatives`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A") to "V1",
-                    setOf("X") to "V2"
+                listOf(
+                    Component.of(setOf("A") to "V1"),
+                    Component.of(setOf("X") to "V2")
                 )
             )
 
@@ -867,8 +867,8 @@ interface DisjointMapTests {
         fun `returns true when comparing elements in the same component`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A", "B", "C") to "V"
+                listOf(
+                    Component.of(setOf("A", "B", "C") to "V")
                 )
             )
 
@@ -905,8 +905,8 @@ interface DisjointMapTests {
         fun `returns single element when only one in map`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A") to "V"
+                listOf(
+                    Component.of(setOf("A") to "V")
                 )
             )
 
@@ -922,9 +922,9 @@ interface DisjointMapTests {
         fun `returns all elements in component when asking for representative`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A", "B", "C") to "V1",
-                    setOf("D", "E", "F") to "V2"
+                listOf(
+                    Component.of(setOf("A", "B", "C") to "V1"),
+                    Component.of(setOf("D", "E", "F") to "V2")
                 )
             )
 
@@ -939,9 +939,9 @@ interface DisjointMapTests {
         fun `returns all elements in component when not asking for representative`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A", "B", "C") to "V1",
-                    setOf("D", "E", "F") to "V2"
+                listOf(
+                    Component.of(setOf("A", "B", "C") to "V1"),
+                    Component.of(setOf("D", "E", "F") to "V2")
                 )
             )
 
@@ -978,8 +978,8 @@ interface DisjointMapTests {
         fun `returns 1 when only one in map`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A") to "V"
+                listOf(
+                    Component.of(setOf("A") to "V")
                 )
             )
 
@@ -995,9 +995,9 @@ interface DisjointMapTests {
         fun `returns size of component when in component`() {
             // Arrange
             val map = create(
-                mapOf(
-                    setOf("A", "B", "C", "D") to "V1",
-                    setOf("E", "F") to "V2"
+                listOf(
+                    Component.of(setOf("A", "B", "C", "D") to "V1"),
+                    Component.of(setOf("E", "F") to "V2")
                 )
             )
 
@@ -1016,6 +1016,17 @@ interface DisjointMapTests {
                 Entry(entry.key, entry.value)
         }
         override fun toString(): String = "$key=$value"
+    }
+
+    data class Component<K, V>(override val keys: Set<K>, override val value: V) : DisjointMap.Component<K, V> {
+        companion object {
+            fun <K, V> of(pair: Pair<Set<K>, V>): Component<K, V> =
+                Component(pair.first, pair.second)
+
+            fun <K, V> of(component: DisjointMap.Component<K, V>): Component<K, V> =
+                Component(component.keys, component.value)
+        }
+        override fun toString(): String = "$keys=$value"
     }
 
 }

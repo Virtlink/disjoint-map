@@ -3,10 +3,7 @@ package com.virtlink.collections.impl
 import com.virtlink.N
 import com.virtlink.collections.DisjointMap
 import com.virtlink.collections.PersistentDisjointMap
-import kotlinx.collections.immutable.ImmutableCollection
-import kotlinx.collections.immutable.ImmutableSet
-import kotlinx.collections.immutable.PersistentMap
-import kotlinx.collections.immutable.toImmutableSet
+import kotlinx.collections.immutable.*
 
 /**
  * A persistent union-find map.
@@ -23,6 +20,16 @@ class PersistentUnionFindMap<K, V> private constructor(
     private var _parents: PersistentMap<K, K>,     // We replace this map when doing path compression.
     private var _ranks: PersistentMap<K, Int>      // We replace this map when doing path compression.
 ) : AbstractUnionFindMap<K, V>(), PersistentDisjointMap<K, V> {
+
+    companion object {
+        private val EMPTY = PersistentUnionFindMap<Nothing, Nothing>(
+            persistentMapOf(),
+            persistentMapOf(),
+            persistentMapOf()
+        )
+        @Suppress("UNCHECKED_CAST")
+        fun <K, V> emptyOf(): PersistentUnionFindMap<K, V> = EMPTY as PersistentUnionFindMap<K, V>
+    }
 
     // Map<K, V>
     override val size: Int get() = keys.size
@@ -122,15 +129,49 @@ class PersistentUnionFindMap<K, V> private constructor(
     }
 
     override fun setComponent(key: K, value: V): PersistentDisjointMap<K, V> {
+        val rep = find(key)
+        
         TODO()
     }
 
-    override fun putComponent(keys: Set<K>, value: V): PersistentDisjointMap<K, V> {
-        TODO()
+    override fun putComponent(component: DisjointMap.Component<K, V>): PersistentDisjointMap<K, V> {
+        val keys = component.keys
+        val value = component.value
+        if (keys.isEmpty()) return this
+
+        // Disunify all keys in the component
+        val newMap = keys.fold<K, PersistentDisjointMap<K, V>>(this) { acc, key -> acc.disunion(key) }
+        // At this point we know each key is in their own component or not in the map
+        val rep = keys.first()
+        // Unify all the keys into a new component with the component's value
+        return keys.fold(newMap) { acc, key -> acc.union(key, rep, { value }) { _, _ -> value } }
     }
 
-    override fun putAllComponents(map: Map<Set<K>, V>): PersistentDisjointMap<K, V> {
-        TODO()
+    override fun putAllComponents(components: Iterable<DisjointMap.Component<K, V>>): PersistentDisjointMap<K, V> {
+        return components.fold<DisjointMap.Component<K, V>, PersistentDisjointMap<K, V>>(this) {
+                acc, component -> acc.putComponent(component)
+        }
+//        val parents = persistentMapOf<K, K>().builder()
+//        val values = persistentMapOf<K, V>().builder()
+//        val ranks = persistentMapOf<K, Int>().builder()
+//        for ((keys, value) in initial) {
+//            if (keys.isEmpty()) continue
+//            val rep = keys.first()
+//            require(rep !in values && rep !in ranks) { "Element $rep was already in the map." }
+//            values[rep] = value
+//            ranks[rep] = keys.size
+//            for (e in keys.drop(1)) {
+//                require(e !in values && e !in ranks) { "Element $e was already in the map." }
+//                parents[e] = rep
+//            }
+//        }
+//        return PersistentUnionFindMap(
+//            parents.build(),
+//            values.build(),
+//            ranks.build()
+//        )
+//
+//        return PersistentUnionFindMap.of(initial)
     }
 
     override fun union(key1: K, key2: K, default: () -> V, unify: (V, V) -> V): PersistentDisjointMap<K, V> {

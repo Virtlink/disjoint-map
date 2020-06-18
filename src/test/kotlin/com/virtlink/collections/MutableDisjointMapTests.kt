@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 @Suppress("ClassName", "unused", "RemoveRedundantBackticks")
 interface MutableDisjointMapTests : DisjointMapTests {
 
-    override fun <K, V> create(initial: Map<Set<K>, V>): MutableDisjointMap<K, V>
+    override fun <K, V> create(initial: Collection<DisjointMap.Component<K, V>>): MutableDisjointMap<K, V>
 
     /**
      * Tests the [MutableDisjointMap.union] method.

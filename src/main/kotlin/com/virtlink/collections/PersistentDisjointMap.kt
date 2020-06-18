@@ -7,6 +7,7 @@ import kotlinx.collections.immutable.PersistentMap
  */
 interface PersistentDisjointMap<K, V> : ImmutableDisjointMap<K, V>, PersistentMap<K, V> {
 
+    // PersistentMap<K, V>
     /**
      * Associates the specified [key] with a new component with the specified [value].
      *
@@ -60,6 +61,8 @@ interface PersistentDisjointMap<K, V> : ImmutableDisjointMap<K, V>, PersistentMa
      */
     override fun clear(): PersistentDisjointMap<K, V>
 
+
+    // PersistentDisjointMap<K, V>
     /**
      * Sets the value associated with the component that includes the given key.
      *
@@ -70,27 +73,26 @@ interface PersistentDisjointMap<K, V> : ImmutableDisjointMap<K, V>, PersistentMa
     fun setComponent(key: K, value: V): PersistentDisjointMap<K, V>
 
     /**
-     * Associates the specified [keys] with a new component with the specified [value].
+     * Puts the given component.
      *
-     * If any of the keys are already part of a component in this map,
-     * the keys are removed from the component and added to the new one.
+     * Any keys in the component that are already part of other components
+     * are removed from those components.
      *
-     * @param keys the keys
-     * @param value the value to associate with the specified [keys]
+     * @param component the component to put
      * @return the resulting persistent map
      */
-    fun putComponent(keys: Set<K>, value: V): PersistentDisjointMap<K, V>
+    fun putComponent(component: DisjointMap.Component<K, V>): PersistentDisjointMap<K, V>
 
     /**
-     * Adds the specified components to this map.
+     * Puts the given components.
      *
-     * If any of the keys are already part of a component in this map,
-     * the keys are removed from the component and added to the new one.
+     * Any keys in a component that are already part of other components
+     * are removed from those components.
      *
-     * @param map a map from a set of keys to a value
+     * @param components the components to put
      * @return the resulting persistent map
      */
-    fun putAllComponents(map: Map<Set<K>, V>): PersistentDisjointMap<K, V>
+    fun putAllComponents(components: Iterable<DisjointMap.Component<K, V>>): PersistentDisjointMap<K, V>
 
     /**
      * Unifies the components that include the given keys.

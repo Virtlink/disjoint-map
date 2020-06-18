@@ -61,7 +61,7 @@ interface MutableDisjointMap<K, V> : DisjointMap<K, V>, MutableMap<K, V> {
 
 
 
-    // MutableMap<K, V>
+    // MutableDisjointMap<K, V>
     /**
      * Gets a mutable set of components in this map.
      *

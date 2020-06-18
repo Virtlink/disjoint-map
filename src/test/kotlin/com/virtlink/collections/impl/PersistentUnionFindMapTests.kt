@@ -1,10 +1,21 @@
-package com.virtlink.collections
+package com.virtlink.collections.impl
+
+import com.virtlink.collections.DisjointMap
+import com.virtlink.collections.PersistentDisjointMap
+import com.virtlink.collections.PersistentDisjointMapTests
+import kotlinx.collections.immutable.persistentMapOf
 
 @Suppress("unused", "ClassName")
 open class PersistentUnionFindMapTests : PersistentDisjointMapTests {
 
-    override fun <K, V> create(initial: Map<Set<K>, V>): PersistentDisjointMap<K, V> {
-        return PersistentUnionFindMap.of(initial)
+    override fun <K, V> create(initial: Collection<DisjointMap.Component<K, V>>): PersistentUnionFindMap<K, V> {
+        initial.forEach {
+            val duplicateKeys = it.keys.intersect(initial.filter { other -> it != other }.flatMap { other -> other.keys })
+            if (duplicateKeys.isNotEmpty())
+                throw IllegalArgumentException("Duplicate keys: $duplicateKeys")
+        }
+
+        return PersistentUnionFindMap.emptyOf<K, V>().putAllComponents(initial)
     }
 
     // @formatter:off
