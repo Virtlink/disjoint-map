@@ -249,6 +249,9 @@ class MutableUnionFindMap<K, V> private constructor(
     }
 
 
+    /**
+     * Inner class used to give a view of the components in the map.
+     */
     private inner class Components: AbstractMutableSet<MutableDisjointMap.MutableComponent<K, V>>() {
 
         override val size: Int
@@ -276,6 +279,9 @@ class MutableUnionFindMap<K, V> private constructor(
         override fun toString(): String = "$key=$value"
     }
 
+    /**
+     * A mutable component.
+     */
     private data class MutableComponent<K, V>(override val keys: MutableSet<K>, override val value: V) : MutableDisjointMap.MutableComponent<K, V> {
         override fun setValue(newValue: V): V {
             TODO("Not yet implemented")

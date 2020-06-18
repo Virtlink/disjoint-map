@@ -75,13 +75,13 @@ abstract class AbstractUnionFindMap<K, /* TODO: out? */ V> : DisjointMap<K, V> {
      * and performs path compression.
      *
      * @param key the key for which to find the representative key
-     * @param roots the mutable map from components to their values
+     * @param roots the map from components to their values
      * @param parents the mutable map from keys to their parent key
      * @param ranks the mutable map from keys to their ranks
      * @return the representative key, or the given key when it's
      * its own representative; or `null` when the key was not found
      */
-    protected fun findMutable(key: K, roots: MutableMap<K, V>, parents: MutableMap<K, K>, ranks: MutableMap<K, Int>): K? {
+    protected fun findMutable(key: K, roots: Map<K, V>, parents: MutableMap<K, K>, ranks: MutableMap<K, Int>): K? {
         // Is the key its own representative?
         if (roots.containsKey(key)) return key
         // If not, do we know the parent key of this key?
@@ -168,9 +168,10 @@ abstract class AbstractUnionFindMap<K, /* TODO: out? */ V> : DisjointMap<K, V> {
      * @param roots the mutable map from components to their values
      * @param parents the mutable map from keys to their parent key
      * @param ranks the mutable map from keys to their ranks
+     * @return `true` when this changed the disjoint map; otherwise, false
      */
-    protected fun disunionMutable(key: K, roots: MutableMap<K, V>, parents: MutableMap<K, K>, ranks: MutableMap<K, Int>) {
-        val rep = findMutable(key, roots, parents, ranks) ?: return
+    protected fun disunionMutable(key: K, roots: MutableMap<K, V>, parents: MutableMap<K, K>, ranks: MutableMap<K, Int>): Boolean {
+        val rep = findMutable(key, roots, parents, ranks) ?: return false
 
         if (rep == key) {
             // The key to disunify is the component's root key
