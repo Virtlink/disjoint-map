@@ -1,4 +1,4 @@
-package com.virtlink.collections2
+package com.virtlink.collections3
 
 /**
  * A persistent collection of elements in disjoint sets.
