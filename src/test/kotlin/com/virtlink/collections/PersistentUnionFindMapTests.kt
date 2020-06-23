@@ -1,9 +1,4 @@
-package com.virtlink.collections.impl
-
-import com.virtlink.collections.DisjointMap
-import com.virtlink.collections.PersistentDisjointMap
-import com.virtlink.collections.PersistentDisjointMapTests
-import kotlinx.collections.immutable.persistentMapOf
+package com.virtlink.collections
 
 @Suppress("unused", "ClassName")
 open class PersistentUnionFindMapTests : PersistentDisjointMapTests {

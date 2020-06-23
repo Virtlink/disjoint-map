@@ -6,7 +6,7 @@ package com.virtlink.collections
  *
  * @return A list of pairs, one from each collection.
  */
-infix fun <T, R> Collection<T>.zipEqualLength(other: Collection<R>): List<Pair<T, R>> {
+internal infix fun <T, R> Collection<T>.zipEqualLength(other: Collection<R>): List<Pair<T, R>> {
     require(this.size == other.size)
     return this zip other
 }
@@ -17,7 +17,7 @@ infix fun <T, R> Collection<T>.zipEqualLength(other: Collection<R>): List<Pair<T
  * @param iterable the iterable
  * @return the string representation
  */
-fun listToString(iterable: Iterable<*>): String {
+internal fun listToString(iterable: Iterable<*>): String {
     val iterator = iterable.iterator()
     return StringBuilder().apply {
         append("[")
@@ -43,7 +43,7 @@ fun listToString(iterable: Iterable<*>): String {
  * @param bx the second iterable
  * @return `true` when they are equal; otherwise, `false`
  */
-fun listEquals(ax: Iterable<*>, bx: Iterable<*>): Boolean {
+internal fun listEquals(ax: Iterable<*>, bx: Iterable<*>): Boolean {
     val axIterator = ax.iterator()
     val bxIterator = bx.iterator()
     while (axIterator.hasNext() && bxIterator.hasNext()) {
@@ -61,7 +61,7 @@ fun listEquals(ax: Iterable<*>, bx: Iterable<*>): Boolean {
  * @param iterable the iterable
  * @return the hash code
  */
-fun listHashCode(iterable: Iterable<*>): Int {
+internal fun listHashCode(iterable: Iterable<*>): Int {
     val iterator = iterable.iterator()
     var result = 1
     while (iterator.hasNext()) {
@@ -78,7 +78,7 @@ fun listHashCode(iterable: Iterable<*>): Int {
  * @param bx the second set
  * @return `true` when they are equal; otherwise, `false`
  */
-fun setEquals(ax: Collection<*>, bx: Collection<*>): Boolean {
+internal fun setEquals(ax: Collection<*>, bx: Collection<*>): Boolean {
     // if every element in this set is in the other set
     // and every element in the other set is in this set
     // then the sets are equal.
@@ -91,7 +91,7 @@ fun setEquals(ax: Collection<*>, bx: Collection<*>): Boolean {
  * @param iterable the iterable
  * @return the hash code
  */
-fun setHashCode(iterable: Iterable<*>): Int {
+internal fun setHashCode(iterable: Iterable<*>): Int {
     val iterator = iterable.iterator()
     var result = 1
     while (iterator.hasNext()) {

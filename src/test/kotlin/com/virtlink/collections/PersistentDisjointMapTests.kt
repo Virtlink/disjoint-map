@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 @Suppress("ClassName", "unused", "RemoveRedundantBackticks")
 interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
 
-    override fun <K, V> create(initial: Collection<DisjointMap.Component<K, V>>): PersistentDisjointMap<K, V>
+    override fun <K, V> create(initial: Collection<Component<K, V>>): PersistentDisjointMap<K, V>
 
     /**
      * Tests the [PersistentDisjointMap.put] method.
@@ -209,7 +209,7 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
     /**
      * Tests the [PersistentDisjointMap.remove] method.
      */
-    interface `remove1()`: PersistentDisjointMapTests {
+    interface `remove()`: PersistentDisjointMapTests {
 
         @Test
         fun `removes a non-representative key but leaves the rest of the non-empty component`() {
@@ -290,194 +290,6 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
     }
 
 
-    /**
-     * Tests the [PersistentDisjointMap.remove] method.
-     */
-    interface `remove2()`: PersistentDisjointMapTests {
-
-        @Test
-        fun `removes a non-representative key but leaves the rest of the non-empty component when the value matches`() {
-            // Arrange
-            val map = create(
-                listOf(
-                    Component.of(setOf("A", "B", "C") to "V"),
-                    Component.of(setOf("D", "E", "F") to "X")
-                )
-            )
-
-            // Act
-            val newMap = map.remove("B", "V")
-
-            // Assert
-            assertEquals(listOf(
-                Component.of(setOf("A", "C") to "V"),
-                Component.of(setOf("D", "E", "F") to "X")
-            ), newMap.components)
-        }
-
-        @Test
-        fun `removes a representative key but leaves the rest of the non-empty component when the value matches`() {
-            // Arrange
-            val map = create(
-                listOf(
-                    Component.of(setOf("A", "B", "C") to "V"),
-                    Component.of(setOf("D", "E", "F") to "X")
-                )
-            )
-
-            // Act
-            val newMap = map.remove("A", "V")
-
-            // Assert
-            assertEquals(listOf(
-                Component.of(setOf("B", "C") to "V"),
-                Component.of(setOf("D", "E", "F") to "X")
-            ), newMap.components)
-        }
-
-        @Test
-        fun `removes the only key and the now empty component when the value matches`() {
-            // Arrange
-            val map = create(
-                listOf(
-                    Component.of(setOf("A") to "V"),
-                    Component.of(setOf("D", "E", "F") to "X")
-                )
-            )
-
-            // Act
-            val newMap = map.remove("A", "V")
-
-            // Assert
-            assertEquals(listOf(
-                Component.of(setOf("D", "E", "F") to "X")
-            ), newMap.components)
-        }
-
-        @Test
-        fun `does not remove anything when the key does not exist`() {
-            // Arrange
-            val map = create(
-                listOf(
-                    Component.of(setOf("A", "B", "C") to "V"),
-                    Component.of(setOf("D", "E", "F") to "X")
-                )
-            )
-
-            // Act
-            val newMap = map.remove("X")
-
-            // Assert
-            assertEquals(map.components, newMap.components)
-        }
-
-        @Test
-        fun `does not remove anything when the value does not match`() {
-            // Arrange
-            val map = create(
-                listOf(
-                    Component.of(setOf("A", "B", "C") to "V"),
-                    Component.of(setOf("D", "E", "F") to "X")
-                )
-            )
-
-            // Act
-            val newMap = map.remove("A", "xx")
-
-            // Assert
-            assertEquals(map.components, newMap.components)
-        }
-
-    }
-
-
-
-    /**
-     * Tests the [PersistentDisjointMap.removeKey] method.
-     */
-    interface `removeKey()`: PersistentDisjointMapTests {
-
-        @Test
-        fun `removes a non-representative key but leaves the rest of the non-empty component`() {
-            // Arrange
-            val map = create(
-                listOf(
-                    Component.of(setOf("A", "B", "C") to "V"),
-                    Component.of(setOf("D", "E", "F") to "X")
-                )
-            )
-
-            // Act
-            val (newMap, pair) = map.removeKey("B")
-
-            // Assert
-            assertEquals(listOf(
-                "V" to setOf("A", "C"),
-                "X" to setOf("D", "E", "F")
-            ), newMap.components)
-            assertEquals("A" to "V", pair)
-        }
-
-        @Test
-        fun `removes a representative key but leaves the rest of the non-empty component`() {
-            // Arrange
-            val map = create(
-                listOf(
-                    Component.of(setOf("A", "B", "C") to "V"),
-                    Component.of(setOf("D", "E", "F") to "X")
-                )
-            )
-
-            // Act
-            val (newMap, pair) = map.removeKey("A")
-
-            // Assert
-            assertEquals(listOf(
-                Component.of(setOf("B", "C") to "V"),
-                Component.of(setOf("D", "E", "F") to "X")
-            ), newMap.components)
-            assertEquals("B" to "V", pair)
-        }
-
-        @Test
-        fun `removes the only key and the now empty component`() {
-            // Arrange
-            val map = create(
-                listOf(
-                    Component.of(setOf("A") to "V"),
-                    Component.of(setOf("D", "E", "F") to "X")
-                )
-            )
-
-            // Act
-            val (newMap, pair) = map.removeKey("A")
-
-            // Assert
-            assertEquals(listOf(
-                Component.of(setOf("D", "E", "F") to "X")
-            ), newMap.components)
-            assertEquals(null to "V", pair)
-        }
-
-        @Test
-        fun `does not remove anything when the key does not exist`() {
-            // Arrange
-            val map = create(
-                listOf(
-                    Component.of(setOf("A", "B", "C") to "V"),
-                    Component.of(setOf("D", "E", "F") to "X")
-                )
-            )
-
-            // Act
-            val (newMap, pair) = map.removeKey("X")
-
-            // Assert
-            assertEquals(map.components, newMap.components)
-            assertNull(pair)
-        }
-
-    }
 
     /**
      * Tests the [PersistentDisjointMap.clear] method.
@@ -524,8 +336,8 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             assertEquals("D", map.find("D"))
             assertEquals(setOf("A", "B", "C"), map.getComponent("B"))
             assertEquals(setOf("D", "E", "F"), map.getComponent("D"))
-            assertEquals(3, map.getComponentSize("B"))
-            assertEquals(3, map.getComponentSize("D"))
+            assertEquals(3, map.getSetSize("B"))
+            assertEquals(3, map.getSetSize("D"))
             assertEquals("V", map["B"])
             assertEquals(null, map["D"])
 
@@ -537,8 +349,8 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             assertEquals(newMap.find("B"), newMap.find("D"))
             assertEquals(setOf("A", "B", "C", "D", "E", "F"), newMap.getComponent("B"))
             assertEquals(setOf("A", "B", "C", "D", "E", "F"), newMap.getComponent("D"))
-            assertEquals(6, newMap.getComponentSize("B"))
-            assertEquals(6, newMap.getComponentSize("D"))
+            assertEquals(6, newMap.getSetSize("B"))
+            assertEquals(6, newMap.getSetSize("D"))
             assertEquals("V", newMap["B"])
             assertEquals("V", newMap["D"])
         }
@@ -559,8 +371,8 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             assertEquals("D", map.find("D"))
             assertEquals(setOf("A", "B", "C"), map.getComponent("B"))
             assertEquals(setOf("D", "E"), map.getComponent("D"))
-            assertEquals(3, map.getComponentSize("B"))
-            assertEquals(2, map.getComponentSize("D"))
+            assertEquals(3, map.getSetSize("B"))
+            assertEquals(2, map.getSetSize("D"))
             assertEquals("V", map["B"])
             assertEquals(null, map["D"])
 
@@ -573,8 +385,8 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             assertEquals("A", newMap.find("D"))
             assertEquals(setOf("A", "B", "C", "D", "E"), newMap.getComponent("B"))
             assertEquals(setOf("A", "B", "C", "D", "E"), newMap.getComponent("D"))
-            assertEquals(5, newMap.getComponentSize("B"))
-            assertEquals(5, newMap.getComponentSize("D"))
+            assertEquals(5, newMap.getSetSize("B"))
+            assertEquals(5, newMap.getSetSize("D"))
             assertEquals("V", newMap["B"])
             assertEquals("V", newMap["D"])
         }
@@ -593,8 +405,8 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             assertEquals(map.find("B"), map.find("D"))
             assertEquals(setOf("A", "B", "C", "D", "E", "F"), map.getComponent("B"))
             assertEquals(setOf("A", "B", "C", "D", "E", "F"), map.getComponent("D"))
-            assertEquals(6, map.getComponentSize("B"))
-            assertEquals(6, map.getComponentSize("D"))
+            assertEquals(6, map.getSetSize("B"))
+            assertEquals(6, map.getSetSize("D"))
             assertEquals("V", map["B"])
             assertEquals("V", map["D"])
 
@@ -606,8 +418,8 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             assertEquals(newMap.find("B"), newMap.find("D"))
             assertEquals(setOf("A", "B", "C", "D", "E", "F"), newMap.getComponent("B"))
             assertEquals(setOf("A", "B", "C", "D", "E", "F"), newMap.getComponent("D"))
-            assertEquals(6, newMap.getComponentSize("B"))
-            assertEquals(6, newMap.getComponentSize("D"))
+            assertEquals(6, newMap.getSetSize("B"))
+            assertEquals(6, newMap.getSetSize("D"))
             assertEquals("V", newMap["B"])
             assertEquals("V", newMap["D"])
         }
