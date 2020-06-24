@@ -3,6 +3,7 @@ package com.virtlink.collections
 import com.virtlink.N
 import com.virtlink.collections.MutableDisjointMap
 import kotlinx.collections.immutable.PersistentMap
+import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toPersistentMap
 import kotlinx.collections.immutable.toPersistentSet
 import java.lang.IllegalArgumentException
@@ -22,6 +23,8 @@ class MutableUnionFindMap<K, V> private constructor(
     private val _parents: MutableMap<K, K>,
     private val _ranks: MutableMap<K, Int>
 ): MutableDisjointMap<K, V> {
+
+    constructor(): this(mutableMapOf(), mutableMapOf(), mutableMapOf())
 
     override val size: Int get() = _roots.size + _parents.size
 

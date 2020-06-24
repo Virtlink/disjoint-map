@@ -40,6 +40,8 @@ interface PersistentDisjointMap<K, V> : ImmutableDisjointMap<K, V> {
     /**
      * Unifies the sets that include the given keys.
      *
+     * When one or both of the keys don't exist in the map, they are added.
+     *
      * @param key1 one key
      * @param key2 another key
      * @param default the function that provides a default value to use when no value is specified
