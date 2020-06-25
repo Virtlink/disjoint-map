@@ -9,201 +9,71 @@ import org.junit.jupiter.api.Test
 @Suppress("ClassName", "unused", "RemoveRedundantBackticks")
 interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
 
-    override fun <K, V> create(initial: Collection<Component<K, V>>): PersistentDisjointMap<K, V>
+    override fun <K, V> create(initial: Iterable<DisjointSet<K, V>>): PersistentDisjointMap<K, V>
 
     /**
-     * Tests the [PersistentDisjointMap.put] method.
+     * Tests the [PersistentDisjointMap.set] method.
      */
-    interface `put()`: PersistentDisjointMapTests {
+    interface `set()`: PersistentDisjointMapTests {
 
         @Test
-        fun `creates a new component with the given key and value`() {
+        fun `when the key is not in the map, creates a new set with the given key and value`() {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B") to "V")
+                    DisjointSet(setOf("A", "B"), "V")
                 )
             )
 
             // Act
-            val newMap = map.put("C", "XX")
+            val newMap = map.set("C", "XX")
 
             // Assert
-            assertEquals(listOf(
-                Component.of(setOf("A", "B") to "V"),
-                Component.of(setOf("C") to "XX")
-            ), newMap.components)
+            assertEquals(mapOf(
+                DisjointSet(setOf("A", "B"), "V"),
+                DisjointSet(setOf("C"), "XX")
+            ), newMap.toMap())
         }
 
         @Test
-        fun `separates an existing component and assigns the given value to the given key`() {
+        fun `when the key is in the map, set the value of the existing set`() {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to "V")
+                    DisjointSet(setOf("A", "B", "C"), "V")
                 )
             )
 
             // Act
-            val newMap = map.put("C", "XX")
+            val newMap = map.set("C", "XX")
 
             // Assert
-            assertEquals(listOf(
-                Component.of(setOf("A", "B") to "V"),
-                Component.of(setOf("C") to "XX")
-            ), newMap.components)
+            assertEquals(mapOf(
+                DisjointSet(setOf("A", "B"), "V"),
+                DisjointSet(setOf("C"), "XX")
+            ), newMap.toMap())
         }
 
         @Test
-        fun `does not union with an existing component with equal value`() {
+        fun `when two sets get the same value, the sets stay disjoint`() {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B") to "V"),
-                    Component.of(setOf("D", "E") to "X")
+                    DisjointSet(setOf("A", "B"), "V"),
+                    DisjointSet(setOf("D", "E"), "X")
                 )
             )
 
             // Act
-            val newMap = map.put("C", "X")
+            val newMap = map.set("C", "X")
 
             // Assert
-            assertEquals(listOf(
-                Component.of(setOf("A", "B") to "V"),
-                Component.of(setOf("C") to "X"),
-                Component.of(setOf("D", "E") to "X")
-            ), newMap.components)
+            assertEquals(mapOf(
+                DisjointSet(setOf("A", "B"), "V"),
+                DisjointSet(setOf("C"), "X"),
+                DisjointSet(setOf("D", "E"), "X")
+            ), newMap.toMap())
         }
-    }
-
-
-    /**
-     * Tests the [PersistentDisjointMap.putComponent] method.
-     */
-    interface `putComponent()`: PersistentDisjointMapTests {
-
-        @Test
-        fun `creates a new component with the given keys and value`() {
-            // Arrange
-            val map = create(
-                listOf(
-                    Component.of(setOf("A", "B") to "V")
-                )
-            )
-
-            // Act
-            val newMap = map.putComponent(setOf("C", "D"), "XX")
-
-            // Assert
-            assertEquals(listOf(
-                Component.of(setOf("A", "B") to "V"),
-                Component.of(setOf("C", "D") to "XX")
-            ), newMap.components)
-        }
-
-        @Test
-        fun `separates keys from existing components and assigns the given value to the given keys`() {
-            // Arrange
-            val map = create(
-                listOf(
-                    Component.of(setOf("A", "B", "C") to "V")
-                )
-            )
-
-            // Act
-            val newMap = map.putComponent(setOf("C", "D"), "XX")
-
-            // Assert
-            assertEquals(listOf(
-                Component.of(setOf("A", "B") to "V"),
-                Component.of(setOf("C", "D") to "XX")
-            ), newMap.components)
-        }
-
-        @Test
-        fun `does not union with an existing component with equal value`() {
-            // Arrange
-            val map = create(
-                listOf(
-                    Component.of(setOf("A", "B") to "V"),
-                    Component.of(setOf("E", "F") to "X")
-                )
-            )
-
-            // Act
-            val newMap = map.putComponent(setOf("C", "D"), "X")
-
-            // Assert
-            assertEquals(listOf(
-                Component.of(setOf("A", "B") to "V"),
-                Component.of(setOf("C", "D") to "X"),
-                Component.of(setOf("E", "F") to "X")
-            ), newMap.components)
-        }
-
-    }
-
-    /**
-     * Tests the [PersistentDisjointMap.putAll] method.
-     */
-    interface `putAll()`: PersistentDisjointMapTests {
-
-        @Test
-        fun `for a normal map acts as if put has been called on each entry`() {
-            // Arrange
-            val map = create(
-                listOf(
-                    Component.of(setOf("A", "B") to "V"),
-                    Component.of(setOf("D", "E") to "X")
-                )
-            )
-            val input = mapOf(
-                "A" to "W",
-                "C" to "XX",
-                "E" to "X"
-            )
-
-            // Act
-            val newMap = map.putAll(input)
-
-            // Assert
-            assertEquals(listOf(
-                Component.of(setOf("A") to "W"),
-                Component.of(setOf("B") to "V"),
-                Component.of(setOf("C") to "XX"),
-                Component.of(setOf("D") to "X"),
-                Component.of(setOf("E") to "X")
-            ), newMap.components)
-        }
-
-        @Test
-        fun `for a disjoint map acts as if putComponent has been called on each entry`() {
-            // Arrange
-            val map = create(
-                listOf(
-                    Component.of(setOf("A", "B") to "V"),
-                    Component.of(setOf("D", "E") to "X")
-                )
-            )
-            val input = create(
-                listOf(
-                    Component.of(setOf("A", "C") to "XX"),
-                    Component.of(setOf("D") to "X")
-                )
-            )
-
-            // Act
-            val newMap = map.putAll(input)
-
-            // Assert
-            assertEquals(listOf(
-                Component.of(setOf("A", "C") to "XX"),
-                Component.of(setOf("B") to "V" ),
-                Component.of(setOf("D") to "X" ),
-                Component.of(setOf("E") to "X")
-            ), newMap.components)
-        }
-
     }
 
     /**
@@ -212,12 +82,12 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
     interface `remove()`: PersistentDisjointMapTests {
 
         @Test
-        fun `removes a non-representative key but leaves the rest of the non-empty component`() {
+        fun `when the key is non-representative, removes it but leaves the rest of the set`() {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to "V"),
-                    Component.of(setOf("D", "E", "F") to "X")
+                    DisjointSet(setOf("A", "B", "C"), "V"),
+                    DisjointSet(setOf("D", "E", "F"), "X")
                 )
             )
 
@@ -225,19 +95,19 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             val newMap = map.remove("B")
 
             // Assert
-            assertEquals(listOf(
+            assertEquals(mapOf(
                 "V" to setOf("A", "C"),
                 "X" to setOf("D", "E", "F")
-            ), newMap.components)
+            ), newMap.toMap())
         }
 
         @Test
-        fun `removes a representative key but leaves the rest of the non-empty component`() {
+        fun `when the key is representative, removes it but leaves the rest of the set`() {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to "V"),
-                    Component.of(setOf("D", "E", "F") to "X")
+                    DisjointSet(setOf("A", "B", "C"), "V"),
+                    DisjointSet(setOf("D", "E", "F"), "X")
                 )
             )
 
@@ -245,19 +115,19 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             val newMap = map.remove("A")
 
             // Assert
-            assertEquals(listOf(
-                Component.of(setOf("B", "C") to "V"),
-                Component.of(setOf("D", "E", "F") to "X")
-            ), newMap.components)
+            assertEquals(mapOf(
+                DisjointSet(setOf("B", "C"), "V"),
+                DisjointSet(setOf("D", "E", "F"), "X")
+            ), newMap.toMap())
         }
 
         @Test
-        fun `removes the only key and the now empty component`() {
+        fun `when the key is the only key in a set, removes the only key and the now empty set`() {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A") to "V"),
-                    Component.of(setOf("D", "E", "F") to "X")
+                    DisjointSet(setOf("A"), "V"),
+                    DisjointSet(setOf("D", "E", "F"), "X")
                 )
             )
 
@@ -265,18 +135,18 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             val newMap = map.remove("A")
 
             // Assert
-            assertEquals(listOf(
-                Component.of(setOf("D", "E", "F") to "X")
-            ), newMap.components)
+            assertEquals(mapOf(
+                DisjointSet(setOf("D", "E", "F"), "X")
+            ), newMap.toMap())
         }
 
         @Test
-        fun `does not remove anything when the key does not exist`() {
+        fun `when the key is not in the map, does not remove anything`() {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to "V"),
-                    Component.of(setOf("D", "E", "F") to "X")
+                    DisjointSet(setOf("A", "B", "C"), "V"),
+                    DisjointSet(setOf("D", "E", "F"), "X")
                 )
             )
 
@@ -284,7 +154,7 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             val newMap = map.remove("X")
 
             // Assert
-            assertEquals(map.components, newMap.components)
+            assertSame(map, newMap)
         }
 
     }
@@ -301,8 +171,8 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to "V"),
-                    Component.of(setOf("D", "E", "F") to "X")
+                    DisjointSet(setOf("A", "B", "C"), "V"),
+                    DisjointSet(setOf("D", "E", "F"), "X")
                 )
             )
 
@@ -310,7 +180,7 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             val newMap = map.clear()
 
             // Assert
-            assertEquals(emptyMap<String, Set<String>>(), newMap.components)
+            assertEquals(emptyMap<String, Set<String>>(), newMap.toMap())
         }
 
     }
@@ -321,12 +191,12 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
     interface `union()`: PersistentDisjointMapTests {
 
         @Test
-        fun `merges components`() {
+        fun `merges sets`() {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to "V"),
-                    Component.of(setOf("D", "E", "F") to null)
+                    DisjointSet(setOf("A", "B", "C"), "V"),
+                    DisjointSet(setOf("D", "E", "F"), null)
                 )
             )
 
@@ -334,12 +204,6 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             assertFalse(map.same("B", "D"))
             assertEquals("A", map.find("B"))
             assertEquals("D", map.find("D"))
-            assertEquals(setOf("A", "B", "C"), map.getComponent("B"))
-            assertEquals(setOf("D", "E", "F"), map.getComponent("D"))
-            assertEquals(3, map.getSetSize("B"))
-            assertEquals(3, map.getSetSize("D"))
-            assertEquals("V", map["B"])
-            assertEquals(null, map["D"])
 
             // Act
             val newMap = map.union("B", "D", { TODO() }, lift { _, _ -> throw IllegalStateException() })
@@ -347,21 +211,15 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             // Assert
             assertTrue(newMap.same("B", "D"))
             assertEquals(newMap.find("B"), newMap.find("D"))
-            assertEquals(setOf("A", "B", "C", "D", "E", "F"), newMap.getComponent("B"))
-            assertEquals(setOf("A", "B", "C", "D", "E", "F"), newMap.getComponent("D"))
-            assertEquals(6, newMap.getSetSize("B"))
-            assertEquals(6, newMap.getSetSize("D"))
-            assertEquals("V", newMap["B"])
-            assertEquals("V", newMap["D"])
         }
 
         @Test
-        fun `adds smaller component to bigger component`() {
+        fun `adds smaller set to bigger set`() {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to "V"),
-                    Component.of(setOf("D", "E") to null)
+                    DisjointSet(setOf("A", "B", "C"), "V"),
+                    DisjointSet(setOf("D", "E"), null)
                 )
             )
 
@@ -369,12 +227,6 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             assertFalse(map.same("B", "D"))
             assertEquals("A", map.find("B"))
             assertEquals("D", map.find("D"))
-            assertEquals(setOf("A", "B", "C"), map.getComponent("B"))
-            assertEquals(setOf("D", "E"), map.getComponent("D"))
-            assertEquals(3, map.getSetSize("B"))
-            assertEquals(2, map.getSetSize("D"))
-            assertEquals("V", map["B"])
-            assertEquals(null, map["D"])
 
             // Act
             val newMap = map.union("B", "D", { TODO() }, lift { _, _ -> throw IllegalStateException() })
@@ -383,12 +235,6 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             assertTrue(newMap.same("B", "D"))
             assertEquals("A", newMap.find("B"))
             assertEquals("A", newMap.find("D"))
-            assertEquals(setOf("A", "B", "C", "D", "E"), newMap.getComponent("B"))
-            assertEquals(setOf("A", "B", "C", "D", "E"), newMap.getComponent("D"))
-            assertEquals(5, newMap.getSetSize("B"))
-            assertEquals(5, newMap.getSetSize("D"))
-            assertEquals("V", newMap["B"])
-            assertEquals("V", newMap["D"])
         }
 
         @Test
@@ -396,19 +242,13 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C", "D", "E", "F") to "V")
+                    DisjointSet(setOf("A", "B", "C", "D", "E", "F"), "V")
                 )
             )
 
             // Assume
             assertTrue(map.same("B", "D"))
             assertEquals(map.find("B"), map.find("D"))
-            assertEquals(setOf("A", "B", "C", "D", "E", "F"), map.getComponent("B"))
-            assertEquals(setOf("A", "B", "C", "D", "E", "F"), map.getComponent("D"))
-            assertEquals(6, map.getSetSize("B"))
-            assertEquals(6, map.getSetSize("D"))
-            assertEquals("V", map["B"])
-            assertEquals("V", map["D"])
 
             // Act
             val newMap = map.union("B", "D", { TODO() }) { _, _ -> throw IllegalStateException() }
@@ -416,12 +256,6 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             // Assert
             assertTrue(newMap.same("B", "D"))
             assertEquals(newMap.find("B"), newMap.find("D"))
-            assertEquals(setOf("A", "B", "C", "D", "E", "F"), newMap.getComponent("B"))
-            assertEquals(setOf("A", "B", "C", "D", "E", "F"), newMap.getComponent("D"))
-            assertEquals(6, newMap.getSetSize("B"))
-            assertEquals(6, newMap.getSetSize("D"))
-            assertEquals("V", newMap["B"])
-            assertEquals("V", newMap["D"])
         }
 
         @Test
@@ -429,8 +263,8 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to "V1"),
-                    Component.of(setOf("D", "E") to "V2")
+                    DisjointSet(setOf("A", "B", "C"), "V1"),
+                    DisjointSet(setOf("D", "E"), "V2")
                 )
             )
 
@@ -451,8 +285,8 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             // Arrange
             val map = create<String, String?>(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to "V1"),
-                    Component.of(setOf("D", "E") to "V2")
+                    DisjointSet(setOf("A", "B", "C"), "V1"),
+                    DisjointSet(setOf("D", "E"), "V2")
                 )
             )
 
@@ -476,12 +310,12 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
     interface `disunion()`: PersistentDisjointMapTests {
 
         @Test
-        fun `disunifies a non-representative key from a component`() {
+        fun `disunifies a non-representative key from a set`() {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to "V"),
-                    Component.of(setOf("D", "E", "F") to "X")
+                    DisjointSet(setOf("A", "B", "C"), "V"),
+                    DisjointSet(setOf("D", "E", "F"), "X")
                 )
             )
 
@@ -493,16 +327,16 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
                 "V" to setOf("A", "C"),
                 "V" to setOf("B"),
                 "X" to setOf("D", "E", "F")
-            ), newMap.components)
+            ), newMap.toMap())
         }
 
         @Test
-        fun `disunifies a representative key from a component`() {
+        fun `disunifies a representative key from a set`() {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to "V"),
-                    Component.of(setOf("D", "E", "F") to "X")
+                    DisjointSet(setOf("A", "B", "C"), "V"),
+                    DisjointSet(setOf("D", "E", "F"), "X")
                 )
             )
 
@@ -514,16 +348,16 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
                 "V" to setOf("A"),
                 "V" to setOf("B", "C"),
                 "X" to setOf("D", "E", "F")
-            ), newMap.components)
+            ), newMap.toMap())
         }
 
         @Test
-        fun `does nothing when disunifying the only key from its component`() {
+        fun `does nothing when disunifying the only key from its set`() {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A") to "V"),
-                    Component.of(setOf("D", "E", "F") to "X")
+                    DisjointSet(setOf("A"), "V"),
+                    DisjointSet(setOf("D", "E", "F"), "X")
                 )
             )
 
@@ -531,7 +365,7 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             val newMap = map.disunion("A")
 
             // Assert
-            assertEquals(map.components, newMap.components)
+            assertSame(map, newMap)
         }
 
         @Test
@@ -539,7 +373,7 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("D", "E", "F") to "X")
+                    DisjointSet(setOf("D", "E", "F"), "X")
                 )
             )
 
@@ -552,72 +386,12 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
     }
 
     /**
-     * Tests the [PersistentDisjointMap.setComponent] method.
-     */
-    interface `setComponent()`: PersistentDisjointMapTests {
-
-        @Test
-        fun `sets a new value to a new component`() {
-            // Arrange
-            val map = create<String, String>()
-
-            // Act
-            val newMap = map.setComponent("B", "XX")
-
-            // Assert
-            assertEquals(listOf(
-                "X" to setOf("XX")
-            ), newMap.components)
-        }
-
-
-        @Test
-        fun `sets a new value to an existing component`() {
-            // Arrange
-            val map = create(
-                listOf(
-                    Component.of(setOf("A", "B", "C") to null as String?)
-                )
-            )
-
-            // Act
-            val newMap = map.setComponent("C", "XX")
-
-            // Assert
-            assertEquals(listOf(
-                "XX" to setOf("A", "B", "C")
-            ), newMap.components)
-        }
-
-        @Test
-        fun `replaces the value of an existing component`() {
-            // Arrange
-            val map = create(
-                listOf(
-                    Component.of(setOf("A", "B", "C") to "V")
-                )
-            )
-
-            // Assume
-            assertEquals("V", map["B"])
-
-            // Act
-            val newMap = map.setComponent("C", "XX")
-
-            // Assert
-            assertEquals(listOf(
-                "XX" to setOf("A", "B", "C")
-            ), newMap.components)
-        }
-    }
-
-    /**
      * Tests the [PersistentDisjointMap.compute] method.
      */
     interface `compute()`: PersistentDisjointMapTests {
 
         @Test
-        fun `computes a new value to a new component`() {
+        fun `computes a new value to a new set`() {
             // Arrange
             val map = create<String, String>()
 
@@ -630,18 +404,18 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
 
             // Assert
             assertEquals(listOf(
-                Component.of(setOf("B") to "XX")
-            ), newMap.components)
+                DisjointSet(setOf("B"), "XX")
+            ), newMap.toMap())
             assertEquals("XX", newValue)
         }
 
 
         @Test
-        fun `computes a new value to an existing component with no value`() {
+        fun `computes a new value to an existing set with no value`() {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to null as String?)
+                    DisjointSet(setOf("A", "B", "C"), null as String?)
                 )
             )
 
@@ -654,17 +428,17 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
 
             // Assert
             assertEquals(listOf(
-                Component.of(setOf("A", "B", "C") to "XX")
-            ), newMap.components)
+                DisjointSet(setOf("A", "B", "C"), "XX")
+            ), newMap.toMap())
             assertEquals("XX", newValue)
         }
 
         @Test
-        fun `computes a new value to an existing component with an existing value`() {
+        fun `computes a new value to an existing set with an existing value`() {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to "V")
+                    DisjointSet(setOf("A", "B", "C"), "V")
                 )
             )
 
@@ -677,8 +451,8 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
 
             // Assert
             assertEquals(listOf(
-                Component.of(setOf("A", "B", "C") to "XX")
-            ), newMap.components)
+                DisjointSet(setOf("A", "B", "C"), "XX")
+            ), newMap.toMap())
             assertEquals("XX", newValue)
         }
 
@@ -693,7 +467,7 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
     interface `computeIfPresent()`: PersistentDisjointMapTests {
 
         @Test
-        fun `computes no value to a new component`() {
+        fun `computes no value to a new set`() {
             // Arrange
             val map = create<String, String>()
 
@@ -703,17 +477,17 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             }
 
             // Assert
-            assertEquals(emptyMap<Set<String>, String>(), newMap.components)
+            assertEquals(emptyMap<Set<String>, String>(), newMap.toMap())
             assertEquals(null, newValue)
         }
 
 
         @Test
-        fun `computes no value to an existing component with no value`() {
+        fun `computes no value to an existing set with no value`() {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to null as String?)
+                    DisjointSet(setOf("A", "B", "C"), null as String?)
                 )
             )
 
@@ -724,17 +498,17 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
 
             // Assert
             assertEquals(listOf(
-                Component.of(setOf("A", "B", "C") to null)
-            ), newMap.components)
+                DisjointSet(setOf("A", "B", "C"), null)
+            ), newMap.toMap())
             assertEquals(null, newValue)
         }
 
         @Test
-        fun `computes a new value to an existing component with an existing value`() {
+        fun `computes a new value to an existing set with an existing value`() {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to "V")
+                    DisjointSet(setOf("A", "B", "C"), "V")
                 )
             )
 
@@ -747,8 +521,8 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
 
             // Assert
             assertEquals(listOf(
-                Component.of(setOf("A", "B", "C") to "XX")
-            ), newMap.components)
+                DisjointSet(setOf("A", "B", "C"), "XX")
+            ), newMap.toMap())
             assertEquals("XX", newValue)
         }
 
@@ -762,7 +536,7 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
     interface `computeIfAbsent()`: PersistentDisjointMapTests {
 
         @Test
-        fun `computes a new value to a new component`() {
+        fun `computes a new value to a new set`() {
             // Arrange
             val map = create<String, String>()
 
@@ -774,18 +548,18 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
 
             // Assert
             assertEquals(listOf(
-                Component.of(setOf("B") to "XX")
-            ), newMap.components)
+                DisjointSet(setOf("B"), "XX")
+            ), newMap.toMap())
             assertEquals("XX", newValue)
         }
 
 
         @Test
-        fun `computes a new value to an existing component with no value`() {
+        fun `computes a new value to an existing set with no value`() {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to null as String?)
+                    DisjointSet(setOf("A", "B", "C"), null as String?)
                 )
             )
 
@@ -797,17 +571,17 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
 
             // Assert
             assertEquals(listOf(
-                Component.of(setOf("A", "B", "C") to "XX")
-            ), newMap.components)
+                DisjointSet(setOf("A", "B", "C"), "XX")
+            ), newMap.toMap())
             assertEquals("XX", newValue)
         }
 
         @Test
-        fun `computes no value to an existing component with an existing value`() {
+        fun `computes no value to an existing set with an existing value`() {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to "V")
+                    DisjointSet(setOf("A", "B", "C"), "V")
                 )
             )
 
@@ -818,8 +592,8 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
 
             // Assert
             assertEquals(listOf(
-                Component.of(setOf("A", "B", "C") to "V")
-            ), newMap.components)
+                DisjointSet(setOf("A", "B", "C"), "V")
+            ), newMap.toMap())
             assertEquals("V", newValue)
         }
 
@@ -835,7 +609,7 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to "V")
+                    DisjointSet(setOf("A", "B", "C"), "V")
                 )
             )
 
@@ -844,8 +618,8 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
 
             // Assert
             assertEquals(listOf(
-                Component.of(setOf("A", "B", "C") to "V")
-            ), newMap.components)
+                DisjointSet(setOf("A", "B", "C"), "V")
+            ), newMap.toMap())
         }
 
         @Test
@@ -853,7 +627,7 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to "V")
+                    DisjointSet(setOf("A", "B", "C"), "V")
                 )
             )
 
@@ -865,9 +639,9 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
 
             // Assert
             assertEquals(listOf(
-                Component.of(setOf("A", "B", "C", "F") to "V"),
-                Component.of(setOf("D", "E") to "XX")
-            ), newMap.components)
+                DisjointSet(setOf("A", "B", "C", "F"), "V"),
+                DisjointSet(setOf("D", "E"), "XX")
+            ), newMap.toMap())
         }
 
         @Test
@@ -875,7 +649,7 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to "V")
+                    DisjointSet(setOf("A", "B", "C"), "V")
                 )
             )
 
@@ -888,13 +662,13 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
 
             // Assert
             assertEquals(listOf(
-                Component.of(setOf("A", "B", "C") to "V"),
-                Component.of(setOf("D", "E") to "XX")
-            ), newMap1.components)
+                DisjointSet(setOf("A", "B", "C"), "V"),
+                DisjointSet(setOf("D", "E"), "XX")
+            ), newMap1.toMap())
             assertEquals(listOf(
-                Component.of(setOf("A", "B", "C", "F") to "V"),
-                Component.of(setOf("D", "E") to "XX")
-            ), newMap2.components)
+                DisjointSet(setOf("A", "B", "C", "F"), "V"),
+                DisjointSet(setOf("D", "E"), "XX")
+            ), newMap2.toMap())
         }
 
     }

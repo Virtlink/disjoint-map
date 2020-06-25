@@ -6,6 +6,6 @@ package com.virtlink.collections
 @Suppress("ClassName", "unused", "RemoveRedundantBackticks")
 interface ImmutableDisjointMapTests: DisjointMapTests {
 
-    override fun <K, V> create(initial: Collection<Component<K, V>>): ImmutableDisjointMap<K, V>
+    override fun <K, V> create(initial: Iterable<DisjointSet<K, V>>): ImmutableDisjointMap<K, V>
 
 }

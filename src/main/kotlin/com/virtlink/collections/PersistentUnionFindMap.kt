@@ -1,7 +1,6 @@
 package com.virtlink.collections
 
 import com.virtlink.N
-import com.virtlink.collections.PersistentUnionFindMap.Companion.emptyOf
 import kotlinx.collections.immutable.*
 
 /**

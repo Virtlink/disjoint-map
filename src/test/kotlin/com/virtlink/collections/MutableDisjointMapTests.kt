@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 @Suppress("ClassName", "unused", "RemoveRedundantBackticks")
 interface MutableDisjointMapTests : DisjointMapTests {
 
-    override fun <K, V> create(initial: Collection<Component<K, V>>): MutableDisjointMap<K, V>
+    override fun <K, V> create(initial: Iterable<DisjointSet<K, V>>): MutableDisjointMap<K, V>
 
 
     /**
@@ -38,7 +38,7 @@ interface MutableDisjointMapTests : DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to null as String?)
+                    DisjointSet(setOf("A", "B", "C"), null as String?)
                 )
             )
 
@@ -57,7 +57,7 @@ interface MutableDisjointMapTests : DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to "V")
+                    DisjointSet(setOf("A", "B", "C"), "V")
                 )
             )
 
@@ -75,14 +75,14 @@ interface MutableDisjointMapTests : DisjointMapTests {
     /**
      * Tests the [MutableDisjointMap.remove] method.
      */
-    interface `remove1()`: MutableDisjointMapTests {
+    interface `remove()`: MutableDisjointMapTests {
 
         @Test
         fun `removes an existing key from a component`() {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to "V")
+                    DisjointSet(setOf("A", "B", "C"), "V")
                 )
             )
 
@@ -92,8 +92,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
             // Assert
             assertEquals(oldValue, "V")
             assertEquals(listOf(
-                Component.of(setOf("A", "C") to "V")
-            ), map.components)
+                DisjointSet(setOf("A", "C"), "V")
+            ), map.toMap())
         }
 
         @Test
@@ -101,7 +101,7 @@ interface MutableDisjointMapTests : DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to "V")
+                    DisjointSet(setOf("A", "B", "C"), "V")
                 )
             )
 
@@ -111,8 +111,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
             // Assert
             assertNull(oldValue)
             assertEquals(listOf(
-                Component.of(setOf("A", "B", "C") to "V")
-            ), map.components)
+                DisjointSet(setOf("A", "B", "C"), "V")
+            ), map.toMap())
         }
 
         @Test
@@ -120,7 +120,7 @@ interface MutableDisjointMapTests : DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A") to "V")
+                    DisjointSet(setOf("A"), "V")
                 )
             )
 
@@ -129,7 +129,7 @@ interface MutableDisjointMapTests : DisjointMapTests {
 
             // Assert
             assertEquals(oldValue, "V")
-            assertEquals(emptyMap<String, String>(), map.components)
+            assertEquals(emptyMap<String, String>(), map.toMap())
         }
 
     }
@@ -145,8 +145,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to "V1"),
-                    Component.of(setOf("D", "E") to "V2")
+                    DisjointSet(setOf("A", "B", "C"), "V1"),
+                    DisjointSet(setOf("D", "E"), "V2")
                 )
             )
 
@@ -154,7 +154,7 @@ interface MutableDisjointMapTests : DisjointMapTests {
             map.clear()
 
             // Assert
-            assertEquals(emptyMap<String, String>(), map.components)
+            assertEquals(emptyMap<String, String>(), map.toMap())
         }
 
     }
@@ -169,8 +169,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to "V"),
-                    Component.of(setOf("D", "E", "F") to null)
+                    DisjointSet(setOf("A", "B", "C"), "V"),
+                    DisjointSet(setOf("D", "E", "F"), null)
                 )
             )
 
@@ -178,12 +178,6 @@ interface MutableDisjointMapTests : DisjointMapTests {
             assertFalse(map.same("B", "D"))
             assertEquals("A", map.find("B"))
             assertEquals("D", map.find("D"))
-            assertEquals(setOf("A", "B", "C"), map.getComponent("B"))
-            assertEquals(setOf("D", "E", "F"), map.getComponent("D"))
-            assertEquals(3, map.getComponentSize("B"))
-            assertEquals(3, map.getComponentSize("D"))
-            assertEquals("V", map["B"])
-            assertEquals(null, map["D"])
 
             // Act
             map.union("B", "D", { TODO() }, lift { _, _ -> throw IllegalStateException() })
@@ -191,12 +185,6 @@ interface MutableDisjointMapTests : DisjointMapTests {
             // Assert
             assertTrue(map.same("B", "D"))
             assertEquals(map.find("B"), map.find("D"))
-            assertEquals(setOf("A", "B", "C", "D", "E", "F"), map.getComponent("B"))
-            assertEquals(setOf("A", "B", "C", "D", "E", "F"), map.getComponent("D"))
-            assertEquals(6, map.getComponentSize("B"))
-            assertEquals(6, map.getComponentSize("D"))
-            assertEquals("V", map["B"])
-            assertEquals("V", map["D"])
         }
 
         @Test
@@ -204,8 +192,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to "V"),
-                    Component.of(setOf("D", "E") to null)
+                    DisjointSet(setOf("A", "B", "C"), "V"),
+                    DisjointSet(setOf("D", "E"), null)
                 )
             )
 
@@ -213,12 +201,6 @@ interface MutableDisjointMapTests : DisjointMapTests {
             assertFalse(map.same("B", "D"))
             assertEquals("A", map.find("B"))
             assertEquals("D", map.find("D"))
-            assertEquals(setOf("A", "B", "C"), map.getComponent("B"))
-            assertEquals(setOf("D", "E"), map.getComponent("D"))
-            assertEquals(3, map.getComponentSize("B"))
-            assertEquals(2, map.getComponentSize("D"))
-            assertEquals("V", map["B"])
-            assertEquals(null, map["D"])
 
             // Act
             map.union("B", "D", { TODO() }, lift { _, _ -> throw IllegalStateException() })
@@ -227,12 +209,6 @@ interface MutableDisjointMapTests : DisjointMapTests {
             assertTrue(map.same("B", "D"))
             assertEquals("A", map.find("B"))
             assertEquals("A", map.find("D"))
-            assertEquals(setOf("A", "B", "C", "D", "E"), map.getComponent("B"))
-            assertEquals(setOf("A", "B", "C", "D", "E"), map.getComponent("D"))
-            assertEquals(5, map.getComponentSize("B"))
-            assertEquals(5, map.getComponentSize("D"))
-            assertEquals("V", map["B"])
-            assertEquals("V", map["D"])
         }
 
         @Test
@@ -240,19 +216,13 @@ interface MutableDisjointMapTests : DisjointMapTests {
             // Arrange
             val map = create<String, String?>(
                 listOf(
-                    Component.of(setOf("A", "B", "C", "D", "E", "F") to "V")
+                    DisjointSet(setOf("A", "B", "C", "D", "E", "F"), "V")
                 )
             )
 
             // Assume
             assertTrue(map.same("B", "D"))
             assertEquals(map.find("B"), map.find("D"))
-            assertEquals(setOf("A", "B", "C", "D", "E", "F"), map.getComponent("B"))
-            assertEquals(setOf("A", "B", "C", "D", "E", "F"), map.getComponent("D"))
-            assertEquals(6, map.getSetSize("B"))
-            assertEquals(6, map.getSetSize("D"))
-            assertEquals("V", map["B"])
-            assertEquals("V", map["D"])
 
             // Act
             map.union("B", "D", { TODO() }, lift { _, _ -> throw IllegalStateException() })
@@ -260,12 +230,6 @@ interface MutableDisjointMapTests : DisjointMapTests {
             // Assert
             assertTrue(map.same("B", "D"))
             assertEquals(map.find("B"), map.find("D"))
-            assertEquals(setOf("A", "B", "C", "D", "E", "F"), map.getComponent("B"))
-            assertEquals(setOf("A", "B", "C", "D", "E", "F"), map.getComponent("D"))
-            assertEquals(6, map.getSetSize("B"))
-            assertEquals(6, map.getSetSize("D"))
-            assertEquals("V", map["B"])
-            assertEquals("V", map["D"])
         }
 
         @Test
@@ -273,8 +237,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to "V1"),
-                    Component.of(setOf("D", "E") to "V2")
+                    DisjointSet(setOf("A", "B", "C"), "V1"),
+                    DisjointSet(setOf("D", "E"), "V2")
                 )
             )
 
@@ -295,8 +259,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
             // Arrange
             val map = create<String, String?>(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to "V1"),
-                    Component.of(setOf("D", "E") to "V2")
+                    DisjointSet(setOf("A", "B", "C"), "V1"),
+                    DisjointSet(setOf("D", "E"), "V2")
                 )
             )
 
@@ -324,8 +288,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to "V"),
-                    Component.of(setOf("D", "E", "F") to "W")
+                    DisjointSet(setOf("A", "B", "C"), "V"),
+                    DisjointSet(setOf("D", "E", "F"), "W")
                 )
             )
 
@@ -333,12 +297,6 @@ interface MutableDisjointMapTests : DisjointMapTests {
             assertFalse(map.same("B", "D"))
             assertEquals("A", map.find("B"))
             assertEquals("D", map.find("D"))
-            assertEquals(setOf("A", "B", "C"), map.getComponent("B"))
-            assertEquals(setOf("D", "E", "F"), map.getComponent("D"))
-            assertEquals(3, map.getComponentSize("B"))
-            assertEquals(3, map.getComponentSize("D"))
-            assertEquals("V", map["B"])
-            assertEquals(null, map["D"])
 
             // Act
             map.disunion("B")
@@ -346,12 +304,6 @@ interface MutableDisjointMapTests : DisjointMapTests {
             // Assert
             assertTrue(map.same("B", "D"))
             assertEquals(map.find("B"), map.find("D"))
-            assertEquals(setOf("A", "B", "C", "D", "E", "F"), map.getComponent("B"))
-            assertEquals(setOf("A", "B", "C", "D", "E", "F"), map.getComponent("D"))
-            assertEquals(6, map.getComponentSize("B"))
-            assertEquals(6, map.getComponentSize("D"))
-            assertEquals("V", map["B"])
-            assertEquals("V", map["D"])
         }
 
 
@@ -360,8 +312,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to "V"),
-                    Component.of(setOf("D", "E", "F") to "W")
+                    DisjointSet(setOf("A", "B", "C"), "V"),
+                    DisjointSet(setOf("D", "E", "F"), "W")
                 )
             )
 
@@ -369,12 +321,6 @@ interface MutableDisjointMapTests : DisjointMapTests {
             assertFalse(map.same("B", "D"))
             assertEquals("A", map.find("B"))
             assertEquals("D", map.find("D"))
-            assertEquals(setOf("A", "B", "C"), map.getComponent("B"))
-            assertEquals(setOf("D", "E", "F"), map.getComponent("D"))
-            assertEquals(3, map.getComponentSize("B"))
-            assertEquals(3, map.getComponentSize("D"))
-            assertEquals("V", map["B"])
-            assertEquals(null, map["D"])
 
             // Act
             map.disunion("X")
@@ -382,12 +328,6 @@ interface MutableDisjointMapTests : DisjointMapTests {
             // Assert
             assertTrue(map.same("B", "D"))
             assertEquals(map.find("B"), map.find("D"))
-            assertEquals(setOf("A", "B", "C", "D", "E", "F"), map.getComponent("B"))
-            assertEquals(setOf("A", "B", "C", "D", "E", "F"), map.getComponent("D"))
-            assertEquals(6, map.getComponentSize("B"))
-            assertEquals(6, map.getComponentSize("D"))
-            assertEquals("V", map["B"])
-            assertEquals("V", map["D"])
         }
     }
 
@@ -410,8 +350,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
 
             // Assert
             assertEquals(listOf(
-                Component.of(setOf("B") to "XX")
-            ), map.components)
+                DisjointSet(setOf("B"), "XX")
+            ), map.toMap())
             assertEquals("XX", newValue)
         }
 
@@ -421,7 +361,7 @@ interface MutableDisjointMapTests : DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to null as String?)
+                    DisjointSet(setOf("A", "B", "C"), null as String?)
                 )
             )
 
@@ -434,8 +374,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
 
             // Assert
             assertEquals(listOf(
-                Component.of(setOf("A", "B", "C") to "XX")
-            ), map.components)
+                DisjointSet(setOf("A", "B", "C"), "XX")
+            ), map.toMap())
             assertEquals("XX", newValue)
         }
 
@@ -444,7 +384,7 @@ interface MutableDisjointMapTests : DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to "V")
+                    DisjointSet(setOf("A", "B", "C"), "V")
                 )
             )
 
@@ -457,8 +397,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
 
             // Assert
             assertEquals(listOf(
-                Component.of(setOf("A", "B", "C") to "XX")
-            ), map.components)
+                DisjointSet(setOf("A", "B", "C"), "XX")
+            ), map.toMap())
             assertEquals("XX", newValue)
         }
 
@@ -483,7 +423,7 @@ interface MutableDisjointMapTests : DisjointMapTests {
             }
 
             // Assert
-            assertEquals(emptyMap<Set<String>, String>(), map.components)
+            assertEquals(emptyMap<Set<String>, String>(), map.toMap())
             assertEquals(null, newValue)
         }
 
@@ -493,7 +433,7 @@ interface MutableDisjointMapTests : DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to null as String?)
+                    DisjointSet(setOf("A", "B", "C"), null as String?)
                 )
             )
 
@@ -504,8 +444,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
 
             // Assert
             assertEquals(listOf(
-                Component.of(setOf("A", "B", "C") to null)
-            ), map.components)
+                DisjointSet(setOf("A", "B", "C"), null)
+            ), map.toMap())
             assertEquals(null, newValue)
         }
 
@@ -514,7 +454,7 @@ interface MutableDisjointMapTests : DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to "V")
+                    DisjointSet(setOf("A", "B", "C"), "V")
                 )
             )
 
@@ -527,8 +467,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
 
             // Assert
             assertEquals(listOf(
-                Component.of(setOf("A", "B", "C") to "XX")
-            ), map.components)
+                DisjointSet(setOf("A", "B", "C"), "XX")
+            ), map.toMap())
             assertEquals("XX", newValue)
         }
 
@@ -554,8 +494,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
 
             // Assert
             assertEquals(listOf(
-                Component.of(setOf("B") to "XX")
-            ), map.components)
+                DisjointSet(setOf("B"), "XX")
+            ), map.toMap())
             assertEquals("XX", newValue)
         }
 
@@ -565,7 +505,7 @@ interface MutableDisjointMapTests : DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to null as String?)
+                    DisjointSet(setOf("A", "B", "C"), null as String?)
                 )
             )
 
@@ -577,8 +517,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
 
             // Assert
             assertEquals(listOf(
-                Component.of(setOf("A", "B", "C") to "XX")
-            ), map.components)
+                DisjointSet(setOf("A", "B", "C"), "XX")
+            ), map.toMap())
             assertEquals("XX", newValue)
         }
 
@@ -587,7 +527,7 @@ interface MutableDisjointMapTests : DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to "V")
+                    DisjointSet(setOf("A", "B", "C"), "V")
                 )
             )
 
@@ -598,8 +538,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
 
             // Assert
             assertEquals(listOf(
-                Component.of(setOf("A", "B", "C") to "V")
-            ), map.components)
+                DisjointSet(setOf("A", "B", "C"), "V")
+            ), map.toMap())
             assertEquals("V", newValue)
         }
 

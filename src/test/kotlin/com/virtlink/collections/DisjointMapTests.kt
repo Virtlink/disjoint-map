@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 @Suppress("ClassName", "unused", "RemoveRedundantBackticks")
 interface DisjointMapTests {
 
-    fun <K, V> create(initial: Collection<Component<K, V>> = emptyList()): DisjointMap<K, V>
+    fun <K, V> create(initial: Iterable<DisjointSet<K, V>> = emptyList()): DisjointMap<K, V>
 
     /**
      * Tests the [DisjointMap.size] property.
@@ -29,9 +29,9 @@ interface DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A") to "Va"),
-                    Component.of(setOf("B") to "V"),
-                    Component.of(setOf("C") to "V")
+                    DisjointSet(setOf("A"), "Va"),
+                    DisjointSet(setOf("B"), "V"),
+                    DisjointSet(setOf("C"), "V")
                 )
             )
 
@@ -44,9 +44,9 @@ interface DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A1", "A2", "A3") to "Va"),
-                    Component.of(setOf("B1", "B2") to "V"),
-                    Component.of(setOf("C1") to "V")
+                    DisjointSet(setOf("A1", "A2", "A3"), "Va"),
+                    DisjointSet(setOf("B1", "B2"), "V"),
+                    DisjointSet(setOf("C1"), "V")
                 )
             )
 
@@ -73,9 +73,9 @@ interface DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A") to "Va"),
-                    Component.of(setOf("B") to "V"),
-                    Component.of(setOf("C") to "V")
+                    DisjointSet(setOf("A"), "Va"),
+                    DisjointSet(setOf("B"), "V"),
+                    DisjointSet(setOf("C"), "V")
                 )
             )
 
@@ -88,9 +88,9 @@ interface DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A1", "A2", "A3") to "Va"),
-                    Component.of(setOf("B1", "B2") to "V"),
-                    Component.of(setOf("C1") to "V")
+                    DisjointSet(setOf("A1", "A2", "A3"), "Va"),
+                    DisjointSet(setOf("B1", "B2"), "V"),
+                    DisjointSet(setOf("C1"), "V")
                 )
             )
 
@@ -108,7 +108,7 @@ interface DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to "V")
+                    DisjointSet(setOf("A", "B", "C"), "V")
                 )
             )
 
@@ -124,7 +124,7 @@ interface DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to "V")
+                    DisjointSet(setOf("A", "B", "C"), "V")
                 )
             )
 
@@ -143,7 +143,7 @@ interface DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to "V")
+                    DisjointSet(setOf("A", "B", "C"), "V")
                 )
             )
 
@@ -162,7 +162,7 @@ interface DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to null as String?)
+                    DisjointSet(setOf("A", "B", "C"), null as String?)
                 )
             )
 
@@ -187,7 +187,7 @@ interface DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to "V")
+                    DisjointSet(setOf("A", "B", "C"), "V")
                 )
             )
 
@@ -203,7 +203,7 @@ interface DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to "V")
+                    DisjointSet(setOf("A", "B", "C"), "V")
                 )
             )
 
@@ -222,7 +222,7 @@ interface DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to null as String?)
+                    DisjointSet(setOf("A", "B", "C"), null as String?)
                 )
             )
 
@@ -260,7 +260,7 @@ interface DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A") to "V")
+                    DisjointSet(setOf("A"), "V")
                 )
             )
 
@@ -276,7 +276,7 @@ interface DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to "V")
+                    DisjointSet(setOf("A", "B", "C"), "V")
                 )
             )
 
@@ -310,9 +310,9 @@ interface DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A1", "A2", "A3") to "Va"),
-                    Component.of(setOf("B1", "B2") to "V"),
-                    Component.of(setOf("C1") to "V")
+                    DisjointSet(setOf("A1", "A2", "A3"), "Va"),
+                    DisjointSet(setOf("B1", "B2"), "V"),
+                    DisjointSet(setOf("C1"), "V")
                 )
             )
 
@@ -328,9 +328,9 @@ interface DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A1", "A2", "A3") to "Va"),
-                    Component.of(setOf("B1", "B2") to "V"),
-                    Component.of(setOf("C1") to "V")
+                    DisjointSet(setOf("A1", "A2", "A3"), "Va"),
+                    DisjointSet(setOf("B1", "B2"), "V"),
+                    DisjointSet(setOf("C1"), "V")
                 )
             )
 
@@ -349,9 +349,9 @@ interface DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A1", "A2", "A3") to "Va"),
-                    Component.of(setOf("B1", "B2") to "V"),
-                    Component.of(setOf("C1") to "V")
+                    DisjointSet(setOf("A1", "A2", "A3"), "Va"),
+                    DisjointSet(setOf("B1", "B2"), "V"),
+                    DisjointSet(setOf("C1"), "V")
                 )
             )
 
@@ -402,7 +402,7 @@ interface DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A") to "V")
+                    DisjointSet(setOf("A"), "V")
                 )
             )
 
@@ -419,8 +419,8 @@ interface DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A") to "V1"),
-                    Component.of(setOf("X") to "V2")
+                    DisjointSet(setOf("A"), "V1"),
+                    DisjointSet(setOf("X"), "V2")
                 )
             )
 
@@ -437,7 +437,7 @@ interface DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C") to "V")
+                    DisjointSet(setOf("A", "B", "C"), "V")
                 )
             )
 
@@ -474,7 +474,7 @@ interface DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A") to "V")
+                    DisjointSet(setOf("A"), "V")
                 )
             )
 
@@ -491,8 +491,8 @@ interface DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    Component.of(setOf("A", "B", "C", "D") to "V1"),
-                    Component.of(setOf("E", "F") to "V2")
+                    DisjointSet(setOf("A", "B", "C", "D"), "V1"),
+                    DisjointSet(setOf("E", "F"), "V2")
                 )
             )
 
