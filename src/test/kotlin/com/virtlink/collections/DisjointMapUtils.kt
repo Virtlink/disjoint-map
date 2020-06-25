@@ -4,6 +4,28 @@ package com.virtlink.collections
 //
 //}
 
+fun <K, V, T : PersistentDisjointMap<K, V>> T.populate(sets: Iterable<DisjointSet<K, V>>): T {
+    @Suppress("UNCHECKED_CAST")
+    return this.builder().apply {
+        for ((keys, value) in sets) {
+            val rep = keys.firstOrNull() ?: continue
+            for (key in keys) {
+                union(rep, key, { value }, { _, _ -> value })
+            }
+        }
+    }.build() as T
+}
+
+fun <K, V, T : MutableDisjointMap<K, V>> T.populate(sets: Iterable<DisjointSet<K, V>>): T {
+    for ((keys, value) in sets) {
+        val rep = keys.firstOrNull() ?: continue
+        for (key in keys) {
+            union(rep, key, { value }, { _, _ -> value })
+        }
+    }
+    return this
+}
+
 fun <K, V> PersistentDisjointMap<K, V>.union(key1: K, key2: K): PersistentDisjointMap<K, V> {
     return this.union(key1, key2, { TODO() }) { _, _ -> throw IllegalStateException() }
 }

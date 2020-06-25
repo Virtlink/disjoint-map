@@ -18,57 +18,64 @@ interface MutableDisjointMapTests : DisjointMapTests {
     interface `set()`: MutableDisjointMapTests {
 
         @Test
-        fun `sets a new value to a new component`() {
-            // Arrange
-            val map = create<String, String>()
-
-            // Assume
-            assertEquals(null, map["B"])
-
-            // Act
-            map.set("B", "XX")
-
-            // Assert
-            assertEquals("XX", map["B"])
-        }
-
-
-        @Test
-        fun `sets a new value to an existing component`() {
+        fun `when the key is not in the map, creates a new set with the given key and value`() {
             // Arrange
             val map = create(
                 listOf(
-                    DisjointSet(setOf("A", "B", "C"), null as String?)
+                    DisjointSet(setOf("A", "B"), 1)
                 )
             )
 
-            // Assume
-            assertEquals(null, map["B"])
-
             // Act
-            map.set("C", "XX")
+            val oldValue = map.set("C", 99)
 
             // Assert
-            assertEquals("XX", map["B"])
+            assertEquals(
+                mapOf(
+                    DisjointSet(setOf("A", "B"), 1),
+                    DisjointSet(setOf("C"), 99)
+                ), map.toMap()
+            )
+            assertNull(oldValue)
         }
 
         @Test
-        fun `replaces the value of an existing component`() {
+        fun `when the key is in the map, set the value of the existing set`() {
             // Arrange
             val map = create(
                 listOf(
                     DisjointSet(setOf("A", "B", "C"), "V")
                 )
             )
-
-            // Assume
-            assertEquals("V", map["B"])
-
             // Act
-            map.set("C", "XX")
+            val oldValue = map.set("C", "XX")
 
             // Assert
-            assertEquals("XX", map["B"])
+            assertEquals(mapOf(
+                DisjointSet(setOf("A", "B", "C"), "XX")
+            ), map.toMap())
+            assertEquals("V", oldValue)
+        }
+
+        @Test
+        fun `when two sets get the same value, the sets stay disjoint`() {
+            // Arrange
+            val map = create(
+                listOf(
+                    DisjointSet(setOf("A", "B"), "V"),
+                    DisjointSet(setOf("D", "E"), "X")
+                )
+            )
+
+            // Act
+            val oldValue = map.set("B", "X")
+
+            // Assert
+            assertEquals(mapOf(
+                DisjointSet(setOf("A", "B"), "X"),
+                DisjointSet(setOf("D", "E"), "X")
+            ), map.toMap())
+            assertEquals("V", oldValue)
         }
     }
 
@@ -78,49 +85,60 @@ interface MutableDisjointMapTests : DisjointMapTests {
     interface `remove()`: MutableDisjointMapTests {
 
         @Test
-        fun `removes an existing key from a component`() {
+        fun `when the key is non-representative, removes it but leaves the rest of the set`() {
             // Arrange
             val map = create(
                 listOf(
-                    DisjointSet(setOf("A", "B", "C"), "V")
+                    DisjointSet(setOf("A", "B", "C"), "V"),
+                    DisjointSet(setOf("D", "E", "F"), "X")
                 )
             )
+
+            // Assume
+            assertNotEquals("B", map.find("B")) // Not representative
 
             // Act
             val oldValue = map.remove("B")
 
             // Assert
-            assertEquals(oldValue, "V")
-            assertEquals(listOf(
-                DisjointSet(setOf("A", "C"), "V")
+            assertEquals(mapOf(
+                DisjointSet(setOf("A", "C"), "V"),
+                DisjointSet(setOf("D", "E", "F"), "X")
             ), map.toMap())
+            assertEquals("V", oldValue)
         }
 
         @Test
-        fun `does nothing when the key does not exist`() {
+        fun `when the key is representative, removes it but leaves the rest of the set`() {
             // Arrange
             val map = create(
                 listOf(
-                    DisjointSet(setOf("A", "B", "C"), "V")
+                    DisjointSet(setOf("A", "B", "C"), "V"),
+                    DisjointSet(setOf("D", "E", "F"), "X")
                 )
             )
 
+            // Assume
+            assertEquals("A", map.find("A")) // Representative
+
             // Act
-            val oldValue = map.remove("X")
+            val oldValue = map.remove("A")
 
             // Assert
-            assertNull(oldValue)
-            assertEquals(listOf(
-                DisjointSet(setOf("A", "B", "C"), "V")
+            assertEquals(mapOf(
+                DisjointSet(setOf("B", "C"), "V"),
+                DisjointSet(setOf("D", "E", "F"), "X")
             ), map.toMap())
+            assertEquals("V", oldValue)
         }
 
         @Test
-        fun `removes a component when removing the last key from a component`() {
+        fun `when the key is the only key in a set, removes the only key and the now empty set`() {
             // Arrange
             val map = create(
                 listOf(
-                    DisjointSet(setOf("A"), "V")
+                    DisjointSet(setOf("A"), "V"),
+                    DisjointSet(setOf("D", "E", "F"), "X")
                 )
             )
 
@@ -128,8 +146,31 @@ interface MutableDisjointMapTests : DisjointMapTests {
             val oldValue = map.remove("A")
 
             // Assert
+            assertEquals(mapOf(
+                DisjointSet(setOf("D", "E", "F"), "X")
+            ), map.toMap())
             assertEquals(oldValue, "V")
-            assertEquals(emptyMap<String, String>(), map.toMap())
+        }
+
+        @Test
+        fun `when the key is not in the map, does not remove anything`() {
+            // Arrange
+            val map = create(
+                listOf(
+                    DisjointSet(setOf("A", "B", "C"), "V"),
+                    DisjointSet(setOf("D", "E", "F"), "X")
+                )
+            )
+
+            // Act
+            val oldValue = map.remove("X")
+
+            // Assert
+            assertEquals(mapOf(
+                DisjointSet(setOf("A", "B", "C"), "V"),
+                DisjointSet(setOf("D", "E", "F"), "X")
+            ), map.toMap())
+            assertNull(oldValue)
         }
 
     }
@@ -145,8 +186,8 @@ interface MutableDisjointMapTests : DisjointMapTests {
             // Arrange
             val map = create(
                 listOf(
-                    DisjointSet(setOf("A", "B", "C"), "V1"),
-                    DisjointSet(setOf("D", "E"), "V2")
+                    DisjointSet(setOf("A", "B", "C"), "V"),
+                    DisjointSet(setOf("D", "E", "F"), "X")
                 )
             )
 
@@ -165,7 +206,7 @@ interface MutableDisjointMapTests : DisjointMapTests {
     interface `union()`: MutableDisjointMapTests {
 
         @Test
-        fun `merges components`() {
+        fun `when both keys are in sets, unifies sets taking non-null value`() {
             // Arrange
             val map = create(
                 listOf(
@@ -174,106 +215,69 @@ interface MutableDisjointMapTests : DisjointMapTests {
                 )
             )
 
-            // Assume
-            assertFalse(map.same("B", "D"))
-            assertEquals("A", map.find("B"))
-            assertEquals("D", map.find("D"))
-
             // Act
             map.union("B", "D", { TODO() }, lift { _, _ -> throw IllegalStateException() })
 
             // Assert
-            assertTrue(map.same("B", "D"))
-            assertEquals(map.find("B"), map.find("D"))
+            assertEquals(mapOf(
+                DisjointSet(setOf("A", "B", "C", "D", "E", "F"), "V")
+            ), map.toMap())
         }
 
         @Test
-        fun `adds smaller component to bigger component`() {
+        fun `when both keys are in sets, unifies sets and values`() {
             // Arrange
             val map = create(
                 listOf(
-                    DisjointSet(setOf("A", "B", "C"), "V"),
-                    DisjointSet(setOf("D", "E"), null)
+                    DisjointSet(setOf("A", "B", "C"), "V1"),
+                    DisjointSet(setOf("D", "E", "F"), "V2")
                 )
             )
 
-            // Assume
-            assertFalse(map.same("B", "D"))
-            assertEquals("A", map.find("B"))
-            assertEquals("D", map.find("D"))
-
             // Act
-            map.union("B", "D", { TODO() }, lift { _, _ -> throw IllegalStateException() })
+            map.union("B", "D", { TODO() }, { v1, v2 -> v1 + v2 })
 
             // Assert
-            assertTrue(map.same("B", "D"))
-            assertEquals("A", map.find("B"))
-            assertEquals("A", map.find("D"))
+            assertEquals(mapOf(
+                DisjointSet(setOf("A", "B", "C", "D", "E", "F"), "V1V2")
+            ), map.toMap())
         }
 
         @Test
-        fun `does nothing when elements are already merged`() {
+        fun `when both keys are in sets and unifier returns null, unifies sets and stores null`() {
             // Arrange
-            val map = create<String, String?>(
+            val map = create(
+                listOf(
+                    DisjointSet<String, String?>(setOf("A", "B", "C"), "V1"),
+                    DisjointSet(setOf("D", "E", "F"), "V2")
+                )
+            )
+
+            // Act
+            map.union("B", "D", { TODO() }, { _, _ -> null })
+
+            // Assert
+            assertEquals(mapOf(
+                DisjointSet(setOf("A", "B", "C", "D", "E", "F"), null)
+            ), map.toMap())
+        }
+
+        @Test
+        fun `when both are in same set, nothing happens`() {
+            // Arrange
+            val map = create(
                 listOf(
                     DisjointSet(setOf("A", "B", "C", "D", "E", "F"), "V")
                 )
             )
 
-            // Assume
-            assertTrue(map.same("B", "D"))
-            assertEquals(map.find("B"), map.find("D"))
-
             // Act
-            map.union("B", "D", { TODO() }, lift { _, _ -> throw IllegalStateException() })
+            map.union("B", "D", { TODO() }) { _, _ -> throw IllegalStateException() }
 
             // Assert
-            assertTrue(map.same("B", "D"))
-            assertEquals(map.find("B"), map.find("D"))
-        }
-
-        @Test
-        fun `stores result of unify function when both have value`() {
-            // Arrange
-            val map = create(
-                listOf(
-                    DisjointSet(setOf("A", "B", "C"), "V1"),
-                    DisjointSet(setOf("D", "E"), "V2")
-                )
-            )
-
-            // Assume
-            assertEquals("V1", map["B"])
-            assertEquals("V2", map["D"])
-
-            // Act
-            map.union("B", "D", { TODO() }) { v1, v2 -> v1 + v2 }
-
-            // Assert
-            assertEquals("V1V2", map["B"])
-            assertEquals("V1V2", map["D"])
-        }
-
-        @Test
-        fun `unify function can return null`() {
-            // Arrange
-            val map = create<String, String?>(
-                listOf(
-                    DisjointSet(setOf("A", "B", "C"), "V1"),
-                    DisjointSet(setOf("D", "E"), "V2")
-                )
-            )
-
-            // Assume
-            assertEquals("V1", map["B"])
-            assertEquals("V2", map["D"])
-
-            // Act
-            map.union("B", "D", { TODO() }) { _, _ -> null }
-
-            // Assert
-            assertEquals(null, map["B"])
-            assertEquals(null, map["D"])
+            assertEquals(mapOf(
+                DisjointSet(setOf("A", "B", "C", "D", "E", "F"), "V")
+            ), map.toMap())
         }
 
     }
@@ -284,50 +288,86 @@ interface MutableDisjointMapTests : DisjointMapTests {
     interface `disunion()`: MutableDisjointMapTests {
 
         @Test
-        fun `disunifies key from set`() {
+        fun `when key is non-representative, disunifies it from its set`() {
             // Arrange
             val map = create(
                 listOf(
                     DisjointSet(setOf("A", "B", "C"), "V"),
-                    DisjointSet(setOf("D", "E", "F"), "W")
+                    DisjointSet(setOf("D", "E", "F"), "X")
                 )
             )
 
             // Assume
-            assertFalse(map.same("B", "D"))
-            assertEquals("A", map.find("B"))
-            assertEquals("D", map.find("D"))
+            assertNotEquals("B", map.find("B")) // Not representative
 
             // Act
             map.disunion("B")
 
             // Assert
-            assertTrue(map.same("B", "D"))
-            assertEquals(map.find("B"), map.find("D"))
+            assertEquals(listOf(
+                "V" to setOf("A", "C"),
+                "V" to setOf("B"),
+                "X" to setOf("D", "E", "F")
+            ), map.toMap())
         }
 
-
         @Test
-        fun `does nothing when key is not in the set`() {
+        fun `when key is representative, disunifies it from its set`() {
             // Arrange
             val map = create(
                 listOf(
                     DisjointSet(setOf("A", "B", "C"), "V"),
-                    DisjointSet(setOf("D", "E", "F"), "W")
+                    DisjointSet(setOf("D", "E", "F"), "X")
                 )
             )
 
             // Assume
-            assertFalse(map.same("B", "D"))
-            assertEquals("A", map.find("B"))
-            assertEquals("D", map.find("D"))
+            assertEquals("A", map.find("A")) // Representative
 
             // Act
-            map.disunion("X")
+            map.disunion("A")
 
             // Assert
-            assertTrue(map.same("B", "D"))
-            assertEquals(map.find("B"), map.find("D"))
+            assertEquals(listOf(
+                "V" to setOf("A"),
+                "V" to setOf("B", "C"),
+                "X" to setOf("D", "E", "F")
+            ), map.toMap())
+        }
+
+        @Test
+        fun `when key is only one in its set, nothing happens`() {
+            // Arrange
+            val map = create(
+                listOf(
+                    DisjointSet(setOf("A"), "V"),
+                    DisjointSet(setOf("D", "E", "F"), "X")
+                )
+            )
+
+            // Act
+            map.disunion("A")
+
+            // Assert
+            assertEquals(listOf(
+                DisjointSet(setOf("A"), "V"),
+                DisjointSet(setOf("D", "E", "F"), "X")
+            ), map.toMap())
+        }
+
+        @Test
+        fun `when key is not in the map, throws`() {
+            // Arrange
+            val map = create(
+                listOf(
+                    DisjointSet(setOf("D", "E", "F"), "X")
+                )
+            )
+
+            // Act/Assert
+            assertThrows(NoSuchElementException::class.java) {
+                map.disunion("x")
+            }
         }
     }
 
@@ -337,7 +377,7 @@ interface MutableDisjointMapTests : DisjointMapTests {
     interface `compute()`: MutableDisjointMapTests {
 
         @Test
-        fun `computes a new value to a new component`() {
+        fun `computes a new value to a new set`() {
             // Arrange
             val map = create<String, String>()
 
@@ -357,7 +397,7 @@ interface MutableDisjointMapTests : DisjointMapTests {
 
 
         @Test
-        fun `computes a new value to an existing component with no value`() {
+        fun `computes a new value to an existing set with no value`() {
             // Arrange
             val map = create(
                 listOf(
@@ -380,7 +420,7 @@ interface MutableDisjointMapTests : DisjointMapTests {
         }
 
         @Test
-        fun `computes a new value to an existing component with an existing value`() {
+        fun `computes a new value to an existing set with an existing value`() {
             // Arrange
             val map = create(
                 listOf(
@@ -413,7 +453,7 @@ interface MutableDisjointMapTests : DisjointMapTests {
     interface `computeIfPresent()`: MutableDisjointMapTests {
 
         @Test
-        fun `computes no value to a new component`() {
+        fun `computes no value to a new set`() {
             // Arrange
             val map = create<String, String>()
 
@@ -429,7 +469,7 @@ interface MutableDisjointMapTests : DisjointMapTests {
 
 
         @Test
-        fun `computes no value to an existing component with no value`() {
+        fun `computes no value to an existing set with no value`() {
             // Arrange
             val map = create(
                 listOf(
@@ -450,7 +490,7 @@ interface MutableDisjointMapTests : DisjointMapTests {
         }
 
         @Test
-        fun `computes a new value to an existing component with an existing value`() {
+        fun `computes a new value to an existing set with an existing value`() {
             // Arrange
             val map = create(
                 listOf(
@@ -482,7 +522,7 @@ interface MutableDisjointMapTests : DisjointMapTests {
     interface `computeIfAbsent()`: MutableDisjointMapTests {
 
         @Test
-        fun `computes a new value to a new component`() {
+        fun `computes a new value to a new set`() {
             // Arrange
             val map = create<String, String>()
 
@@ -501,7 +541,7 @@ interface MutableDisjointMapTests : DisjointMapTests {
 
 
         @Test
-        fun `computes a new value to an existing component with no value`() {
+        fun `computes a new value to an existing set with no value`() {
             // Arrange
             val map = create(
                 listOf(
@@ -523,7 +563,7 @@ interface MutableDisjointMapTests : DisjointMapTests {
         }
 
         @Test
-        fun `computes no value to an existing component with an existing value`() {
+        fun `computes no value to an existing set with an existing value`() {
             // Arrange
             val map = create(
                 listOf(
