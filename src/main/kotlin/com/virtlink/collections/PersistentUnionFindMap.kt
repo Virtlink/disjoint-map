@@ -13,7 +13,7 @@ import kotlinx.collections.immutable.*
  * @property _ranks maps a key to its rank, which is the number of keys it represents, including itself.
  * This map contains only entries for those keys that have a rank greater than one.
  */
-class PersistentUnionFindMap<K, V> private constructor(
+class PersistentUnionFindMap<K, V> internal constructor(
     private val _roots: PersistentMap<K, V>,
     private var _parents: PersistentMap<K, K>,     // We replace this map when doing path compression.
     private var _ranks: PersistentMap<K, Int>      // We replace this map when doing path compression.

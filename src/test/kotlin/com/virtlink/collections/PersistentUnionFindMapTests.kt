@@ -1,10 +1,20 @@
 package com.virtlink.collections
 
+import kotlinx.collections.immutable.PersistentMap
+import kotlinx.collections.immutable.persistentMapOf
+import java.util.*
+
 @Suppress("unused", "ClassName")
 open class PersistentUnionFindMapTests : PersistentDisjointMapTests {
 
     override fun <K, V> create(initial: Iterable<DisjointSet<K, V>>): PersistentUnionFindMap<K, V> {
-        return PersistentUnionFindMap.emptyOf<K, V>().populate(initial)
+        val roots = persistentMapOf<K, V>().builder()
+        val parents = persistentMapOf<K, K>().builder()
+        val ranks = persistentMapOf<K, Int>().builder()
+
+        populate(initial, roots, parents, ranks)
+
+        return PersistentUnionFindMap(roots.build(), parents.build(), ranks.build())
     }
 
     // @formatter:off

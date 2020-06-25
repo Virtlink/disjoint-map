@@ -300,7 +300,7 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             val newMap = map.disunion("B")
 
             // Assert
-            assertEquals(listOf(
+            assertEquals(mapOf(
                 "V" to setOf("A", "C"),
                 "V" to setOf("B"),
                 "X" to setOf("D", "E", "F")
@@ -324,7 +324,7 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             val newMap = map.disunion("A")
 
             // Assert
-            assertEquals(listOf(
+            assertEquals(mapOf(
                 "V" to setOf("A"),
                 "V" to setOf("B", "C"),
                 "X" to setOf("D", "E", "F")
@@ -345,7 +345,7 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             val newMap = map.disunion("A")
 
             // Assert
-            assertEquals(listOf(
+            assertEquals(mapOf(
                 DisjointSet(setOf("A"), "V"),
                 DisjointSet(setOf("D", "E", "F"), "X")
             ), newMap.toMap())
@@ -387,7 +387,7 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             }
 
             // Assert
-            assertEquals(listOf(
+            assertEquals(mapOf(
                 DisjointSet(setOf("B"), "XX")
             ), newMap.toMap())
             assertEquals("XX", newValue)
@@ -411,7 +411,7 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             }
 
             // Assert
-            assertEquals(listOf(
+            assertEquals(mapOf(
                 DisjointSet(setOf("A", "B", "C"), "XX")
             ), newMap.toMap())
             assertEquals("XX", newValue)
@@ -434,7 +434,7 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             }
 
             // Assert
-            assertEquals(listOf(
+            assertEquals(mapOf(
                 DisjointSet(setOf("A", "B", "C"), "XX")
             ), newMap.toMap())
             assertEquals("XX", newValue)
@@ -481,7 +481,7 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             }
 
             // Assert
-            assertEquals(listOf(
+            assertEquals(mapOf(
                 DisjointSet(setOf("A", "B", "C"), null)
             ), newMap.toMap())
             assertEquals(null, newValue)
@@ -504,7 +504,7 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             }
 
             // Assert
-            assertEquals(listOf(
+            assertEquals(mapOf(
                 DisjointSet(setOf("A", "B", "C"), "XX")
             ), newMap.toMap())
             assertEquals("XX", newValue)
@@ -531,7 +531,7 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             }
 
             // Assert
-            assertEquals(listOf(
+            assertEquals(mapOf(
                 DisjointSet(setOf("B"), "XX")
             ), newMap.toMap())
             assertEquals("XX", newValue)
@@ -554,7 +554,7 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             }
 
             // Assert
-            assertEquals(listOf(
+            assertEquals(mapOf(
                 DisjointSet(setOf("A", "B", "C"), "XX")
             ), newMap.toMap())
             assertEquals("XX", newValue)
@@ -575,7 +575,7 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             }
 
             // Assert
-            assertEquals(listOf(
+            assertEquals(mapOf(
                 DisjointSet(setOf("A", "B", "C"), "V")
             ), newMap.toMap())
             assertEquals("V", newValue)
@@ -601,7 +601,7 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             val newMap = map.builder().build()
 
             // Assert
-            assertEquals(listOf(
+            assertEquals(mapOf(
                 DisjointSet(setOf("A", "B", "C"), "V")
             ), newMap.toMap())
         }
@@ -622,7 +622,7 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             val newMap = builder.build()
 
             // Assert
-            assertEquals(listOf(
+            assertEquals(mapOf(
                 DisjointSet(setOf("A", "B", "C", "F"), "V"),
                 DisjointSet(setOf("D", "E"), "XX")
             ), newMap.toMap())
@@ -645,11 +645,11 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             val newMap2 = builder.build()
 
             // Assert
-            assertEquals(listOf(
+            assertEquals(mapOf(
                 DisjointSet(setOf("A", "B", "C"), "V"),
                 DisjointSet(setOf("D", "E"), "XX")
             ), newMap1.toMap())
-            assertEquals(listOf(
+            assertEquals(mapOf(
                 DisjointSet(setOf("A", "B", "C", "F"), "V"),
                 DisjointSet(setOf("D", "E"), "XX")
             ), newMap2.toMap())

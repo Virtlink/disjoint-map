@@ -18,7 +18,7 @@ import java.lang.IllegalArgumentException
  * @property _ranks maps a key to its rank, which is the number of keys it represents, including itself.
  * This map contains only entries for those keys that have a rank greater than one.
  */
-class MutableUnionFindMap<K, V> private constructor(
+class MutableUnionFindMap<K, V> internal constructor(
     private val _roots: MutableMap<K, V>,
     private val _parents: MutableMap<K, K>,
     private val _ranks: MutableMap<K, Int>
