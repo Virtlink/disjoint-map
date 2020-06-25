@@ -67,15 +67,6 @@ interface DisjointMap<K, out V> {
     }
 
     /**
-     * Gets the size of the set that includes the given key.
-     *
-     * @param key the key to look for
-     * @return the number of keys in the component that includes the given key,
-     * including the key itself; or 0 when the key is not in the map
-     */
-    fun getSetSize(key: K): Int
-
-    /**
      * Copies the sets from this disjoint map to a new map.
      *
      * @return the new map

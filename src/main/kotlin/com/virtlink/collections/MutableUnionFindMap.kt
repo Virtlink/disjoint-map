@@ -42,11 +42,6 @@ class MutableUnionFindMap<K, V> internal constructor(
         return findMutable(key, this._roots, this._parents, this._ranks)
     }
 
-    override fun getSetSize(key: K): Int {
-        val rep = find(key) ?: return 0
-        return _ranks[rep] ?: 1
-    }
-
     override operator fun set(key: K, value: V): V? {
         return setMutable(key, value, this._roots, this._parents, this._ranks)
     }

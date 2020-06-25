@@ -53,11 +53,6 @@ class PersistentUnionFindMap<K, V> internal constructor(
         return rep
     }
 
-    override fun getSetSize(key: K): Int {
-        val rep = find(key) ?: return 0
-        return _ranks[rep] ?: 1
-    }
-
     override operator fun set(key: K, value: V): PersistentDisjointMap<K, V> {
         val mutableRoots = this._roots.builder()
         val mutableParents = this._parents.builder()
@@ -169,8 +164,6 @@ class PersistentUnionFindMap<K, V> internal constructor(
         override fun contains(key: K): Boolean = currentMap.contains(key)
 
         override fun same(key1: K, key2: K): Boolean = currentMap.same(key1, key2)
-
-        override fun getSetSize(key: K): Int = currentMap.getSetSize(key)
 
         override fun set(key: K, value: V): V? {
             val oldValue = get(key)
