@@ -43,7 +43,8 @@ class MutableUnionFindMap<K, V> internal constructor(
     }
 
     override operator fun set(key: K, value: V): V? {
-        return setMutable(key, value, this._roots, this._parents, this._ranks)
+        val (_, oldValue) = setMutable(key, value, this._roots, this._parents, this._ranks)
+        return oldValue
     }
 
     override fun remove(key: K): V? {
@@ -58,7 +59,7 @@ class MutableUnionFindMap<K, V> internal constructor(
     }
 
     override fun union(key1: K, key2: K, default: () -> V, unify: (V, V) -> V) {
-        unionMutable(key1, key1, default, unify, this._roots, this._parents, this._ranks)
+        unionMutable(key1, key2, default, unify, this._roots, this._parents, this._ranks)
     }
 
     override fun disunion(key: K) {

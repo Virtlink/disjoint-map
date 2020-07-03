@@ -50,11 +50,12 @@ internal fun <K, V> findMutable(key: K, roots: Map<K, V>, parents: MutableMap<K,
  * @param roots the mutable map from sets to their values
  * @param parents the mutable map from keys to their parent key
  * @param ranks the mutable map from keys to their ranks
+ * @return `true` when the map was changed; otherwise, `false`
  */
-internal fun <K, V> unionMutable(key1: K, key2: K, default: () -> V, unify: (V, V) -> V, roots: MutableMap<K, V>, parents: MutableMap<K, K>, ranks: MutableMap<K, Int>) {
+internal fun <K, V> unionMutable(key1: K, key2: K, default: () -> V, unify: (V, V) -> V, roots: MutableMap<K, V>, parents: MutableMap<K, K>, ranks: MutableMap<K, Int>): Boolean {
     val leftRep = findMutable(key1, roots, parents, ranks) ?: key1
     val rightRep = findMutable(key2, roots, parents, ranks) ?: key2
-    if (leftRep == rightRep) return
+    if (leftRep == rightRep) return false
 
     // Decide which element is eliminated, and which is the new representative.
     // The higher-ranked element is chosen as the representative.
@@ -88,6 +89,8 @@ internal fun <K, V> unionMutable(key1: K, key2: K, default: () -> V, unify: (V, 
     // Remove the representative from the parents map and
     // make the eliminated element point to the new representative
     parents[element] = rep
+
+    return true
 }
 
 /**
@@ -124,13 +127,13 @@ internal fun <K, V> disunionMutable(key: K, roots: MutableMap<K, V>, parents: Mu
  * @param roots the mutable map from sets to their values
  * @param parents the mutable map from keys to their parent key
  * @param ranks the mutable map from keys to their ranks
- * @return the old value associated with the key; or `null`
+ * @return a pair of whether the map was changed and the old value associated with the key; or `null`
  */
-internal fun <K, V> setMutable(key: K, value: V, roots: MutableMap<K, V>, parents: MutableMap<K, K>, ranks: MutableMap<K, Int>): V? {
+internal fun <K, V> setMutable(key: K, value: V, roots: MutableMap<K, V>, parents: MutableMap<K, K>, ranks: MutableMap<K, Int>): Pair<Boolean, V?> {
     val rep = findMutable(key, roots, parents, ranks) ?: key
     val oldValue = roots[rep]
     setMutableRep(rep, value, roots)
-    return oldValue
+    return Pair(oldValue != value, oldValue)
 }
 
 /**

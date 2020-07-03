@@ -32,6 +32,7 @@ fun <K, V> populate(sets: Iterable<DisjointSet<K, V>>, roots: MutableMap<K, V>, 
     val queue = LinkedList<K>()
     for ((keys, value) in sets) {
         if (keys.isEmpty()) continue
+        queue.clear()
         val rep = keys.first()
         roots[rep] = value
         queue.add(rep)

@@ -58,7 +58,8 @@ class PersistentUnionFindMap<K, V> internal constructor(
         val mutableParents = this._parents.builder()
         val mutableRanks = this._ranks.builder()
 
-        setMutable(key, value, mutableRoots, mutableParents, mutableRanks)
+        val (changed, _) = setMutable(key, value, mutableRoots, mutableParents, mutableRanks)
+        if (!changed) return this
 
         return PersistentUnionFindMap(mutableRoots.build(), mutableParents.build(), mutableRanks.build())
     }
@@ -82,7 +83,8 @@ class PersistentUnionFindMap<K, V> internal constructor(
         val mutableParents = this._parents.builder()
         val mutableRanks = this._ranks.builder()
 
-        unionMutable(key1, key2, default, unify, mutableRoots, mutableParents, mutableRanks)
+        val changed = unionMutable(key1, key2, default, unify, mutableRoots, mutableParents, mutableRanks)
+        if (!changed) return this
 
         return PersistentUnionFindMap(mutableRoots.build(), mutableParents.build(), mutableRanks.build())
     }
