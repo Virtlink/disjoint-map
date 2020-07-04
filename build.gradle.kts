@@ -56,11 +56,50 @@ val dokkaJar by tasks.creating(Jar::class) {
     from(tasks.dokka)
 }
 
+val sourcesJar by tasks.creating(Jar::class) {
+    archiveClassifier.set("sources")
+    from(sourceSets.getByName("main").allSource)
+}
+
+val pomDesc: String by project
+val pomUrl: String by project
+val pomLicenseName: String by project
+val pomLicenseUrl: String by project
+val pomLicenseDist: String by project
+val pomDeveloperId: String by project
+val pomDeveloperName: String by project
+val pomScmUrl: String by project
+val pomScmConnection: String by project
+val pomScmDevConnection: String by project
+
 publishing {
     publications {
         create<MavenPublication>("lib") {
             from(components["java"])
             artifact(dokkaJar)
+            artifact(sourcesJar)
+
+            pom.withXml {
+                asNode().apply {
+                    appendNode("name", rootProject.name)
+                    appendNode("description", pomDesc)
+                    appendNode("url", pomUrl)
+                    appendNode("licenses").appendNode("license").apply {
+                        appendNode("name", pomLicenseName)
+                        appendNode("url", pomLicenseUrl)
+                        appendNode("distribution", pomLicenseDist)
+                    }
+                    appendNode("developers").appendNode("developer").apply {
+                        appendNode("id", pomDeveloperId)
+                        appendNode("name", pomDeveloperName)
+                    }
+                    appendNode("scm").apply {
+                        appendNode("url", pomScmUrl)
+                        appendNode("connection", pomScmConnection)
+                        appendNode("developerConnection", pomScmDevConnection)
+                    }
+                }
+            }
         }
     }
 
