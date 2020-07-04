@@ -1,7 +1,5 @@
 package com.virtlink.collections
 
-import kotlinx.collections.immutable.persistentMapOf
-
 @Suppress("unused", "ClassName")
 open class MutableUnionFindMapTests : MutableDisjointMapTests {
 

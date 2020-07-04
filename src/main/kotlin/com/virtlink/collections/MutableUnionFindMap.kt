@@ -1,12 +1,6 @@
 package com.virtlink.collections
 
 import com.virtlink.N
-import com.virtlink.collections.MutableDisjointMap
-import kotlinx.collections.immutable.PersistentMap
-import kotlinx.collections.immutable.persistentMapOf
-import kotlinx.collections.immutable.toPersistentMap
-import kotlinx.collections.immutable.toPersistentSet
-import java.lang.IllegalArgumentException
 
 /**
  * A mutable union-find map.

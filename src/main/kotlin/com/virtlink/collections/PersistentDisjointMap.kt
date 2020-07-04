@@ -1,6 +1,5 @@
 package com.virtlink.collections
 
-import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.PersistentMap
 
 /**
