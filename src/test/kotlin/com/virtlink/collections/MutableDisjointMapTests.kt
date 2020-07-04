@@ -305,9 +305,9 @@ interface MutableDisjointMapTests : DisjointMapTests {
 
             // Assert
             assertEquals(mapOf(
-                "V" to setOf("A", "C"),
-                "V" to setOf("B"),
-                "X" to setOf("D", "E", "F")
+                DisjointSet(setOf("A", "C"), "V"),
+                DisjointSet(setOf("B"), "V"),
+                DisjointSet(setOf("D", "E", "F"), "X")
             ), map.toMap())
         }
 
@@ -329,9 +329,9 @@ interface MutableDisjointMapTests : DisjointMapTests {
 
             // Assert
             assertEquals(mapOf(
-                "V" to setOf("A"),
-                "V" to setOf("B", "C"),
-                "X" to setOf("D", "E", "F")
+                DisjointSet(setOf("A"), "V"),
+                DisjointSet(setOf("B", "C"), "V"),
+                DisjointSet(setOf("D", "E", "F"), "X")
             ), map.toMap())
         }
 

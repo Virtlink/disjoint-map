@@ -26,7 +26,7 @@ internal fun <K, V> findMutable(key: K, roots: Map<K, V>, parents: MutableMap<K,
     if (parent != representative) {
         // Path compression:
         // Update the key to point directly to the representative key
-        parents.put(key, representative)
+        parents[key] = representative
         // Remove one from the rank of the parent
         ranks.compute(parent) { _, oldRank ->
             val newRank = (oldRank ?: 1) - 1
@@ -50,7 +50,7 @@ internal fun <K, V> findMutable(key: K, roots: Map<K, V>, parents: MutableMap<K,
  * @param roots the mutable map from sets to their values
  * @param parents the mutable map from keys to their parent key
  * @param ranks the mutable map from keys to their ranks
- * @return `true` when the map was changed; otherwise, `false`
+ * @return whether disjoint sets have been unified
  */
 internal fun <K, V> unionMutable(key1: K, key2: K, default: () -> V, unify: (V, V) -> V, roots: MutableMap<K, V>, parents: MutableMap<K, K>, ranks: MutableMap<K, Int>): Boolean {
     val leftRep = findMutable(key1, roots, parents, ranks) ?: key1
@@ -89,7 +89,6 @@ internal fun <K, V> unionMutable(key1: K, key2: K, default: () -> V, unify: (V, 
     // Remove the representative from the parents map and
     // make the eliminated element point to the new representative
     parents[element] = rep
-
     return true
 }
 
@@ -103,18 +102,32 @@ internal fun <K, V> unionMutable(key1: K, key2: K, default: () -> V, unify: (V, 
  * @param roots the mutable map from sets to their values
  * @param parents the mutable map from keys to their parent key
  * @param ranks the mutable map from keys to their ranks
- * @return `true` when this changed the disjoint map; otherwise, false
+ * @return whether the key was in the map
  */
 internal fun <K, V> disunionMutable(key: K, roots: MutableMap<K, V>, parents: MutableMap<K, K>, ranks: MutableMap<K, Int>): Boolean {
-    val rep = findMutable(key, roots, parents, ranks) ?: return false
+    var rep: K = findMutable(key, roots, parents, ranks) ?: return false
 
     if (rep == key) {
-        // The key to disunify is the set's root key
-        TODO("Not implemented")
+        // The key to disunify is the set's rep key
+
+        // Create a new disjoint set with the highest ranking key as the rep
+        val newRep = parents.asSequence().filter { (_, r) -> r == key }.map { (k, _) -> k }
+            .maxWith(Comparator { k1, k2 -> (ranks[k1] ?: 1).compareTo(ranks[k2] ?: 1) })
+            ?: return true // The key was the only one in the disjoint set
+        rep = newRep
+        roots[rep] = roots[key]!!
     } else {
         // The key to disunify is not the set's root key
-        TODO("Not implemented")
+
+        // Create a new disjoint set with the key as the rep
+        roots[key] = roots[rep]!!
+        // Remove it from the parents set
+        parents.remove(key)
     }
+
+    // Any keys which have the old key as the parent now get the rep as the parent
+    parents.replaceAllStub { _, r -> if (r == key) rep else r }
+    return true
 }
 
 /**
@@ -127,13 +140,13 @@ internal fun <K, V> disunionMutable(key: K, roots: MutableMap<K, V>, parents: Mu
  * @param roots the mutable map from sets to their values
  * @param parents the mutable map from keys to their parent key
  * @param ranks the mutable map from keys to their ranks
- * @return a pair of whether the map was changed and the old value associated with the key; or `null`
+ * @return the old value associated with the key; or `null`
  */
-internal fun <K, V> setMutable(key: K, value: V, roots: MutableMap<K, V>, parents: MutableMap<K, K>, ranks: MutableMap<K, Int>): Pair<Boolean, V?> {
+internal fun <K, V> setMutable(key: K, value: V, roots: MutableMap<K, V>, parents: MutableMap<K, K>, ranks: MutableMap<K, Int>): V? {
     val rep = findMutable(key, roots, parents, ranks) ?: key
     val oldValue = roots[rep]
     setMutableRep(rep, value, roots)
-    return Pair(oldValue != value, oldValue)
+    return oldValue
 }
 
 /**
@@ -155,55 +168,22 @@ internal fun <K, V> setMutableRep(rep: K, value: V, roots: MutableMap<K, V>) {
  * When the key is the last key of a set, the set is removed.
  *
  * @param key the key to remove
- * @param expectedValue the value to remove; or `null` when it could be any value
- * @param checkValue whether to check the value before removing
  * @param roots the mutable map from sets to their values
  * @param parents the mutable map from keys to their parent key
  * @param ranks the mutable map from keys to their ranks
- * @return a pair of a different key of the same set (or `null` when the set was removed),
- * and the value of the set from which the key was removed; or `null` when the key was not found
+ * @return the value of the set from which the key was removed; or `null` when the key was not found
  */
-internal fun <K, V> removeMutable(key: K, expectedValue: V?, checkValue: Boolean, roots: MutableMap<K, V>, parents: MutableMap<K, K>, ranks: MutableMap<K, Int>): Pair<K?, V>? {
-    val root = findMutable(key, roots, parents, ranks) ?: return null   // The representative of the set
-    val value = roots.getValue(root)                                    // The value of the set
-    var rep: K? = root
-
-    if (checkValue && value != expectedValue) return null               // Value mismatch
-
-    val rank = ranks.remove(key) ?: return null                         // Non-null if the key is known
-    val isRep = parents.remove(key) == null                             // Non-null when the key is not the set's representative
-    assert((rep == key) xor !isRep)                                     // Either the key is a rep (and therefore not in parents); or the key is in parents (and therefore not a rep).
-
-    if (isRep) {
-        // Apparently the key was itself a representative, so we have to find another
-
-        // Pick the highest ranking key from the other elements as the new rep
-        val invRep = parents.asSequence().filter { (_, r) -> r == key }.map { (k, _) -> k }
-        rep = invRep.maxWith(Comparator { k1, k2 -> (ranks[k1] ?: 1).compareTo(ranks[k2] ?: 1) })   // Non-null if invRep is not empty
-    }
-
-    if (rep != null) {
-        // Apparently we found a new representative (the set is not empty)
-
-        // Set the representative of keys to `rep` when their representative is `key`; otherwise leave unchanged
-        replaceAllStub(parents) { _, r -> if (r == key) rep else r }
-        // Store the new rank of the new representative
-        ranks[rep] = (ranks[rep] ?: 1) + rank
-
-        // Move the value from the old to the new representative, if any
-        if (key in roots && rep != key) {
-            roots.remove(key)
-            roots[rep] = value
-        }
-    }
-
-    return rep to value
+internal fun <K, V> removeMutable(key: K, roots: MutableMap<K, V>, parents: MutableMap<K, K>, ranks: MutableMap<K, Int>): V? {
+    // Ensure the key we want to remove is in its own set
+    disunionMutable(key, roots, parents, ranks)
+    // Now we can remove it
+    return roots.remove(key)
 }
 
-private fun <K, V> replaceAllStub(map: MutableMap<K, V>, f: (K, V) -> V) {
+private fun <K, V> MutableMap<K, V>.replaceAllStub(f: (K, V) -> V) {
     // TODO: Replace this function with Map.replaceAll() once it's fixed for PersistentMap.builder()
-    val entries = mapOf(*map.entries.map { (e, v) -> e to v }.toTypedArray())
+    val entries = mapOf(*this.entries.map { (e, v) -> e to v }.toTypedArray())
     for (e in entries) {
-        map.replace(e.key, f(e.key, e.value))
+        this.replace(e.key, f(e.key, e.value))
     }
 }

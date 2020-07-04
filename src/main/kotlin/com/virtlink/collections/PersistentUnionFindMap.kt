@@ -58,10 +58,9 @@ class PersistentUnionFindMap<K, V> internal constructor(
         val mutableParents = this._parents.builder()
         val mutableRanks = this._ranks.builder()
 
-        val (changed, _) = setMutable(key, value, mutableRoots, mutableParents, mutableRanks)
-        if (!changed) return this
+        setMutable(key, value, mutableRoots, mutableParents, mutableRanks)
 
-        return PersistentUnionFindMap(mutableRoots.build(), mutableParents.build(), mutableRanks.build())
+        return buildMap(mutableRoots.build(), mutableParents.build(), mutableRanks.build())
     }
 
     override fun remove(key: K): PersistentDisjointMap<K, V> {
@@ -69,9 +68,9 @@ class PersistentUnionFindMap<K, V> internal constructor(
         val mutableParents = this._parents.builder()
         val mutableRanks = this._ranks.builder()
 
-        removeMutable(key, null, false, mutableRoots, mutableParents, mutableRanks) ?: return this
+        removeMutable(key, mutableRoots, mutableParents, mutableRanks) ?: return this
 
-        return PersistentUnionFindMap(mutableRoots.build(), mutableParents.build(), mutableRanks.build())
+        return buildMap(mutableRoots.build(), mutableParents.build(), mutableRanks.build())
     }
 
     override fun clear(): PersistentDisjointMap<K, V> {
@@ -86,7 +85,7 @@ class PersistentUnionFindMap<K, V> internal constructor(
         val changed = unionMutable(key1, key2, default, unify, mutableRoots, mutableParents, mutableRanks)
         if (!changed) return this
 
-        return PersistentUnionFindMap(mutableRoots.build(), mutableParents.build(), mutableRanks.build())
+        return buildMap(mutableRoots.build(), mutableParents.build(), mutableRanks.build())
     }
 
     override fun disunion(key: K): PersistentDisjointMap<K, V> {
@@ -94,10 +93,10 @@ class PersistentUnionFindMap<K, V> internal constructor(
         val mutableParents = this._parents.builder()
         val mutableRanks = this._ranks.builder()
 
-        val changed = disunionMutable(key, mutableRoots, mutableParents, mutableRanks)
-        if (!changed) return this
+        val success = disunionMutable(key, mutableRoots, mutableParents, mutableRanks)
+        if (!success) throw NoSuchElementException()
 
-        return PersistentUnionFindMap(mutableRoots.build(), mutableParents.build(), mutableRanks.build())
+        return buildMap(mutableRoots.build(), mutableParents.build(), mutableRanks.build())
     }
 
     override fun compute(key: K, mapping: (K, V?) -> V): PersistentDisjointMap.Result<K, V, V> {
@@ -108,7 +107,7 @@ class PersistentUnionFindMap<K, V> internal constructor(
 
         setMutableRep(rep, newValue, mutableRoots)
 
-        return PersistentDisjointMap.Result(PersistentUnionFindMap(mutableRoots.build(), _parents, _ranks), newValue)
+        return PersistentDisjointMap.Result(buildMap(mutableRoots.build(), _parents, _ranks), newValue)
     }
 
     override fun computeIfPresent(key: K, mapping: (K, V) -> V): PersistentDisjointMap.Result<K, V, V?> {
@@ -119,7 +118,7 @@ class PersistentUnionFindMap<K, V> internal constructor(
 
         setMutableRep(rep, newValue, mutableRoots)
 
-        return PersistentDisjointMap.Result(PersistentUnionFindMap(mutableRoots.build(), _parents, _ranks), newValue)
+        return PersistentDisjointMap.Result(buildMap(mutableRoots.build(), _parents, _ranks), newValue)
     }
 
     override fun computeIfAbsent(key: K, mapping: (K) -> V): PersistentDisjointMap.Result<K, V, V> {
@@ -131,7 +130,7 @@ class PersistentUnionFindMap<K, V> internal constructor(
 
         setMutableRep(rep, newValue, mutableRoots)
 
-        return PersistentDisjointMap.Result(PersistentUnionFindMap(mutableRoots.build(), _parents, _ranks), newValue)
+        return PersistentDisjointMap.Result(buildMap(mutableRoots.build(), _parents, _ranks), newValue)
     }
 
     override fun toMap(): PersistentMap<Set<K>, V> {
@@ -142,6 +141,23 @@ class PersistentUnionFindMap<K, V> internal constructor(
 
         return mapping.map { (rep, keys) -> keys.toPersistentSet() to N.of(this._roots[rep]) }
             .toMap<Set<K>, V>().toPersistentMap()
+    }
+
+    /**
+     * Builds a new map of the given inner map builders.
+     *
+     * @param newRoots the new roots
+     * @param newParents the new parents
+     * @param newRanks the new ranks
+     * @return the new map; or the same map if nothing changed
+     */
+    private fun buildMap(
+        newRoots: PersistentMap<K, V>,
+        newParents: PersistentMap<K, K>,
+        newRanks: PersistentMap<K, Int>
+    ): PersistentUnionFindMap<K, V>  {
+        if (newRoots === this._roots && newParents === this._parents && newRanks === this._ranks) return this
+        return PersistentUnionFindMap(newRoots, newParents, newRanks)
     }
 
     override fun builder(): PersistentDisjointMap.Builder<K, V> {
