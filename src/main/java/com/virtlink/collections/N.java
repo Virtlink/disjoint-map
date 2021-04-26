@@ -1,4 +1,4 @@
-package com.virtlink;
+package com.virtlink.collections;
 
 import javax.annotation.Nullable;
 import java.util.Map;
@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * Nullness helper function.
  */
-public final class N {
+/* package private */ final class N {
 
     /**
      * Helper function for Kotlin that converts an explicitly nullable value {code T?} into one that is only null

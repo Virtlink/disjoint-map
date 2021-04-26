@@ -1,7 +1,5 @@
 package com.virtlink.collections
 
-import com.virtlink.N
-
 /**
  * Finds the representative key for the given key
  * and performs path compression.

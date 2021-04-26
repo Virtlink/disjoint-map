@@ -1,6 +1,5 @@
 package com.virtlink.collections
 
-import com.virtlink.N
 import kotlinx.collections.immutable.*
 
 /**

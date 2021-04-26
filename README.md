@@ -1,5 +1,5 @@
 # Disjoint Map
-This is a Disjoint Map implementation in Kotlin, usable in any JVM language.
+This is a Disjoint Map implementation in Kotlin, usable in both Java and Kotlin.
 
 ## Getting Started
 No documentation yet.
@@ -12,7 +12,7 @@ Please read our [contributing guide](CONTRIBUTING.md).
 
 
 ## License
-Copyright 2020 - Daniel A. A. Pelsmaeker
+Copyright 2020-2021 - Daniel A. A. Pelsmaeker
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the
 License. You may obtain a copy of the License at <http://www.apache.org/licenses/LICENSE-2.0>.

@@ -1,7 +1,5 @@
 package com.virtlink.collections
 
-import com.virtlink.N
-
 /**
  * A mutable union-find map.
  *
