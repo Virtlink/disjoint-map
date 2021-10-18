@@ -7,25 +7,25 @@ import java.util.Date
 plugins {
     java
     `maven-publish`
-    kotlin("jvm") version "1.3.72"
+    kotlin("jvm") version "1.5.31"
     id("org.jetbrains.dokka") version "0.10.1"
     id("com.jfrog.bintray") version "1.8.5"
 }
 
 repositories {
     mavenCentral()
-    jcenter()
-    maven { url = uri("https://kotlin.bintray.com/kotlinx") }
 }
 
+val junitVersion = "5.8.1"
+
 dependencies {
-    implementation(kotlin("stdlib-jdk8"))
-    implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable-jvm:0.3.2")
+    implementation      (kotlin("stdlib-jdk8"))
+    implementation      ("org.jetbrains.kotlinx:kotlinx-collections-immutable-jvm:0.3.4")
 
-    compileOnly("com.google.code.findbugs:jsr305:3.0.2")
+    compileOnly         ("com.google.code.findbugs:jsr305:3.0.2")
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.2")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.2")
+    testImplementation  ("org.junit.jupiter:junit-jupiter-api:$junitVersion")
+    testRuntimeOnly     ("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
 }
 
 configure<JavaPluginConvention> {
