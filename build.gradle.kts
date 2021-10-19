@@ -28,7 +28,7 @@ dependencies {
     testRuntimeOnly     ("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
 }
 
-configure<JavaPluginConvention> {
+configure<JavaPluginExtension> {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
 }
