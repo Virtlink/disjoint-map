@@ -9,6 +9,8 @@ package com.virtlink.collections
  * for those keys that are not root keys.
  * @property _ranks maps a key to its rank, which is the number of keys it represents, including itself.
  * This map contains only entries for those keys that have a rank greater than one.
+ * @param K the type of keys
+ * @param V the type of values
  */
 class MutableUnionFindMap<K, V> internal constructor(
     private val _roots: MutableMap<K, V>,
@@ -48,8 +50,8 @@ class MutableUnionFindMap<K, V> internal constructor(
         _ranks.clear()
     }
 
-    override fun union(key1: K, key2: K, default: () -> V, unify: (V, V) -> V) {
-        unionMutable(key1, key2, default, unify, this._roots, this._parents, this._ranks)
+    override fun union(key1: K, key2: K, default: () -> V, compare: Comparator<K>, unify: (V, V) -> V) {
+        unionMutable(key1, key2, default, compare, unify, this._roots, this._parents, this._ranks)
     }
 
     override fun disunion(key: K) {
@@ -61,7 +63,9 @@ class MutableUnionFindMap<K, V> internal constructor(
         val rep = find(key) ?: key
         val oldValue = get(rep)
         val newValue = mapping(rep, oldValue)
+
         setMutableRep(rep, newValue, this._roots)
+
         return newValue
     }
 
@@ -69,7 +73,9 @@ class MutableUnionFindMap<K, V> internal constructor(
         val rep = find(key) ?: key
         val oldValue = get(rep) ?: return null
         val newValue = mapping(rep, oldValue)
+
         setMutableRep(rep, newValue, this._roots)
+
         return newValue
     }
 
@@ -78,7 +84,9 @@ class MutableUnionFindMap<K, V> internal constructor(
         val oldValue = get(rep)
         if (oldValue != null) return oldValue
         val newValue = mapping(rep)
+
         setMutableRep(rep, newValue, this._roots)
+
         return newValue
     }
 

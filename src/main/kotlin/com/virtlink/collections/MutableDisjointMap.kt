@@ -49,7 +49,7 @@ interface MutableDisjointMap<K, V> : DisjointMap<K, V> {
      * @param unify function that unifies the associated values of each of the sets,
      * where the first value is from the representative
      */
-    fun union(key1: K, key2: K, default: () -> V, unify: (V, V) -> V)
+    fun union(key1: K, key2: K, default: () -> V, compare: Comparator<K> = Comparator { _, _ -> 0 }, unify: (V, V) -> V)
 
     /**
      * Disunifies the given key from its set.

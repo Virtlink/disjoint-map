@@ -129,7 +129,7 @@ private fun <K, V, T: MutableDisjointMap<K, V>> T.addSets(sets: Iterable<Pair<Se
     for ((keys, value) in sets) {
         val rep = keys.firstOrNull() ?: continue
         for (key in keys) {
-            union(rep, key, { value }, { _, _ -> value })
+            union(rep, key, { value }, { _, _ -> 0 }) { _, _ -> value }
         }
     }
     return this

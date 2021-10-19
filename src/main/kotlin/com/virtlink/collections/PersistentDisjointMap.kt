@@ -53,7 +53,7 @@ interface PersistentDisjointMap<K, V> : ImmutableDisjointMap<K, V> {
      * where the first value is from the representative
      * @return the resulting persistent map
      */
-    fun union(key1: K, key2: K, default: () -> V, unify: (V, V) -> V): PersistentDisjointMap<K, V>
+    fun union(key1: K, key2: K, default: () -> V, compare: Comparator<K> = Comparator { _, _ -> 0 }, unify: (V, V) -> V): PersistentDisjointMap<K, V>
 
     /**
      * Disunifies the given key from its set.

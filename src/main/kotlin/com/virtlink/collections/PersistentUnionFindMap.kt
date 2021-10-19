@@ -78,12 +78,12 @@ class PersistentUnionFindMap<K, V> internal constructor(
         return emptyOf()
     }
 
-    override fun union(key1: K, key2: K, default: () -> V, unify: (V, V) -> V): PersistentDisjointMap<K, V> {
+    override fun union(key1: K, key2: K, default: () -> V, compare: Comparator<K>, unify: (V, V) -> V): PersistentDisjointMap<K, V> {
         val mutableRoots = this._roots.builder()
         val mutableParents = this._parents.builder()
         val mutableRanks = this._ranks.builder()
 
-        val changed = unionMutable(key1, key2, default, unify, mutableRoots, mutableParents, mutableRanks)
+        val changed = unionMutable(key1, key2, default, compare, unify, mutableRoots, mutableParents, mutableRanks)
         if (!changed) return this
 
         return buildMap(mutableRoots.build(), mutableParents.build(), mutableRanks.build())
@@ -200,8 +200,8 @@ class PersistentUnionFindMap<K, V> internal constructor(
             currentMap = currentMap.clear()
         }
 
-        override fun union(key1: K, key2: K, default: () -> V, unify: (V, V) -> V) {
-            currentMap = currentMap.union(key1, key2, default, unify)
+        override fun union(key1: K, key2: K, default: () -> V, compare: Comparator<K>, unify: (V, V) -> V) {
+            currentMap = currentMap.union(key1, key2, default, compare, unify)
         }
 
         override fun disunion(key: K) {

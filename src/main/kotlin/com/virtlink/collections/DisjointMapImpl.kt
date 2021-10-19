@@ -13,7 +13,12 @@ package com.virtlink.collections
  * @return the representative key, or the given key when it's
  * its own representative; or `null` when the key was not found
  */
-internal fun <K, V> findMutable(key: K, roots: Map<K, V>, parents: MutableMap<K, K>, ranks: MutableMap<K, Int>): K? {
+internal fun <K, V> findMutable(
+    key: K,
+    roots: Map<K, V>,
+    parents: MutableMap<K, K>,
+    ranks: MutableMap<K, Int>
+): K? {
     // Is the key its own representative?
     if (roots.containsKey(key)) return key
     // If not, do we know the parent key of this key?
@@ -57,43 +62,64 @@ internal fun <K, V> findMutable(key: K, roots: Map<K, V>, parents: MutableMap<K,
  * @param V the type of values
  * @return whether disjoint sets have been unified
  */
-internal fun <K, V> unionMutable(key1: K, key2: K, default: () -> V, unify: (V, V) -> V, roots: MutableMap<K, V>, parents: MutableMap<K, K>, ranks: MutableMap<K, Int>): Boolean {
+internal fun <K, V> unionMutable(
+    key1: K,
+    key2: K,
+    default: () -> V,
+    compare: Comparator<K>,
+    unify: (V, V) -> V,
+    roots: MutableMap<K, V>,
+    parents: MutableMap<K, K>,
+    ranks: MutableMap<K, Int>
+): Boolean {
     val leftRep = findMutable(key1, roots, parents, ranks) ?: key1
     val rightRep = findMutable(key2, roots, parents, ranks) ?: key2
     if (leftRep == rightRep) return false
 
     // Decide which element is eliminated, and which is the new representative.
-    // The higher-ranked element is chosen as the representative.
-    val leftRank = ranks.remove(leftRep) ?: 1
-    val rightRank = ranks.remove(rightRep) ?: 1
-    val leftHasHigherRank = leftRank >= rightRank
-    val rep = if (leftHasHigherRank) leftRep else rightRep
-    val element = if (leftHasHigherRank) rightRep else leftRep
-    ranks[rep] = leftRank + rightRank
+    // The higher-valued element is chosen as the representative.
+    val leftRank = ranks[leftRep] ?: 1
+    val rightRank = ranks[rightRep] ?: 1
+    val leftHasHigherValue = compare.then { _, _ -> leftRank.compareTo(rightRank) }.compare(leftRep, rightRep) >= 0
+    val repr = if (leftHasHigherValue) leftRep else rightRep  // the new representative
+    val elem = if (leftHasHigherValue) rightRep else leftRep  // the eliminated variable
 
-    // Determine the new value associated with the representative.
-    // It's either the value associated with the non-representative element,
-    // the value associated with the representative element,
-    // the unified value of both elements,
-    // or the default value when none of the elements has an associated value.
+    // Determine the new value associated with the representative. It's either:
     val newValue = when {
-        element !in roots.keys && rep !in roots.keys -> default()
-        element !in roots.keys -> N.of(roots.remove(rep))
-        rep !in roots.keys -> N.of(roots.remove(element))
-        else -> {
+        // - the unified value of both elements;
+        elem in roots.keys && repr in roots.keys -> {
             // NOTE: We know both `element` and `rep` are in the values map,
-            // so values.remove should only return null when their value happens to be null.
-            val elemValue = N.of(roots.remove(element))
-            val repValue = N.of(roots.remove(rep))
+            //  so values.get() should only return null when their value happens to be null.
+            val repValue = N.of(roots[repr])
+            val elemValue = N.of(roots[elem])
             unify(repValue, elemValue)
         }
+        // - the value associated with the representative element;
+        repr in roots.keys -> N.of(roots[repr])
+        // - the value associated with the eliminated element; or
+        elem in roots.keys -> N.of(roots[elem])
+        // - the default value when neither element has an associated value.
+        else -> default()
     }
-    // Set the new unified value
-    roots[rep] = newValue
+
+    // NOTE: Before this point, no mutation of the disjoint map occurs.
+    //  Therefore, if any of the above code fails, the map should still be in a consistent state.
+
+    // Update the values
+    roots.remove(repr)
+    roots.remove(elem)
+    roots[repr] = newValue
+
+    // Update the ranks
+    ranks.remove(leftRep)
+    ranks.remove(rightRep)
+    ranks[repr] = leftRank + rightRank
 
     // Remove the representative from the parents map and
     // make the eliminated element point to the new representative
-    parents[element] = rep
+    parents.remove(repr)
+    parents[elem] = repr
+
     return true
 }
 
@@ -119,7 +145,7 @@ internal fun <K, V> disunionMutable(key: K, roots: MutableMap<K, V>, parents: Mu
 
         // Create a new disjoint set with the highest ranking key as the rep
         val newRep = parents.asSequence().filter { (_, r) -> r == key }.map { (k, _) -> k }
-            .maxWith(Comparator { k1, k2 -> (ranks[k1] ?: 1).compareTo(ranks[k2] ?: 1) })
+            .maxWithOrNull { k1, k2 -> (ranks[k1] ?: 1).compareTo(ranks[k2] ?: 1) }
             ?: return true // The key was the only one in the disjoint set
         rep = newRep
         roots[rep] = roots[key]!!
@@ -186,7 +212,12 @@ internal fun <K, V> setMutableRep(rep: K, value: V, roots: MutableMap<K, V>) {
  * @param V the type of values
  * @return the value of the set from which the key was removed; or `null` when the key was not found
  */
-internal fun <K, V> removeMutable(key: K, roots: MutableMap<K, V>, parents: MutableMap<K, K>, ranks: MutableMap<K, Int>): V? {
+internal fun <K, V> removeMutable(
+    key: K,
+    roots: MutableMap<K, V>,
+    parents: MutableMap<K, K>,
+    ranks: MutableMap<K, Int>
+): V? {
     // Ensure the key we want to remove is in its own set
     disunionMutable(key, roots, parents, ranks)
     // Now we can remove it
