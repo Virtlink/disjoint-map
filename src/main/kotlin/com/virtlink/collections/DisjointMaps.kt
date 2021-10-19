@@ -9,7 +9,7 @@ package com.virtlink.collections
  * @param V the type of values
  * @return an empty persistent disjoint map
  */
-inline fun <K, V> persistentDisjointMapOf(): PersistentDisjointMap<K, V> = PersistentUnionFindMap.emptyOf()
+fun <K, V> persistentDisjointMapOf(): PersistentDisjointMap<K, V> = PersistentUnionFindMap.emptyOf()
 
 /**
  * Returns a persistent disjoint map with the given sets.
@@ -30,7 +30,7 @@ fun <K, V> persistentDisjointMapOf(vararg pairs: Pair<Set<K>, V>): PersistentDis
  * @param V the type of values
  * @return an empty mutable disjoint map
  */
-inline fun <K, V> mutableDisjointMapOf(): MutableDisjointMap<K, V> = MutableUnionFindMap<K, V>()
+fun <K, V> mutableDisjointMapOf(): MutableDisjointMap<K, V> = MutableUnionFindMap()
 
 /**
  * Returns a mutable disjoint map with the given sets.

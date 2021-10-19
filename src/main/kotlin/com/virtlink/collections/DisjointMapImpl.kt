@@ -1,5 +1,7 @@
 package com.virtlink.collections
 
+import kotlinx.collections.immutable.toPersistentSet
+
 /**
  * Finds the representative key for the given key
  * and performs path compression.
@@ -224,8 +226,27 @@ internal fun <K, V> removeMutable(
     return roots.remove(key)
 }
 
+/**
+ * Copies the sets from this disjoint map to a new map.
+ *
+ * @return the new map
+ */
+internal fun <K, V> DisjointMap<K, V>.toMapImpl(
+    roots: Map<K, V>,
+    parents: Map<K, K>,
+    ranks: Map<K, Int>,
+): Map<Set<K>, V> {
+    // Maps each representative key to a set of keys
+    val mapping = mutableMapOf<K, MutableSet<K>>()
+    roots.keys.forEach { k -> mapping[k] = mutableSetOf(k) }
+    parents.keys.forEach { k -> mapping[find(k)]!!.add(k) }
+
+    return mapping.map { (rep, keys) -> keys.toPersistentSet() to N.of(roots[rep]) }
+        .toMap<Set<K>, V>()
+}
+
+// TODO: Replace this function with Map.replaceAll() once it's fixed for PersistentMap.builder()
 private fun <K, V> MutableMap<K, V>.replaceAllStub(f: (K, V) -> V) {
-    // TODO: Replace this function with Map.replaceAll() once it's fixed for PersistentMap.builder()
     val entries = mapOf(*this.entries.map { (e, v) -> e to v }.toTypedArray())
     for (e in entries) {
         this.replace(e.key, f(e.key, e.value))

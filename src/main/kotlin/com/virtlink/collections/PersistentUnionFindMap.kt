@@ -135,13 +135,7 @@ class PersistentUnionFindMap<K, V> internal constructor(
     }
 
     override fun toMap(): PersistentMap<Set<K>, V> {
-        // Maps each representative key to a set of keys
-        val mapping = mutableMapOf<K, MutableSet<K>>()
-        this._roots.keys.forEach { k -> mapping[k] = mutableSetOf(k) }
-        this._parents.keys.forEach { k -> mapping[find(k)]!!.add(k) }
-
-        return mapping.map { (rep, keys) -> keys.toPersistentSet() to N.of(this._roots[rep]) }
-            .toMap<Set<K>, V>().toPersistentMap()
+        return toMapImpl(this._roots, this._parents, this._ranks).toPersistentMap()
     }
 
     /**

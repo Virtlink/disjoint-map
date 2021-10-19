@@ -41,7 +41,7 @@ class MutableUnionFindMap<K, V> internal constructor(
     }
 
     override fun remove(key: K): V? {
-        return removeMutable(key, this._roots, this._parents, this._ranks) ?: return null
+        return removeMutable(key, this._roots, this._parents, this._ranks)
     }
 
     override fun clear() {
@@ -91,13 +91,7 @@ class MutableUnionFindMap<K, V> internal constructor(
     }
 
     override fun toMap(): MutableMap<Set<K>, V> {
-        // Maps each representative key to a set of keys
-        val mapping = mutableMapOf<K, MutableSet<K>>()
-        this._roots.keys.forEach { k -> mapping[k] = mutableSetOf(k) }
-        this._parents.keys.forEach { k -> mapping[find(k)]!!.add(k) }
-
-        return mapping.map { (rep, keys) -> keys.toMutableSet() to N.of(this._roots[rep]) }
-            .toMap<Set<K>, V>().toMutableMap()
+        return toMapImpl(this._roots, this._parents, this._ranks).toMutableMap()
     }
 
 }
