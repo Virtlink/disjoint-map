@@ -1,7 +1,7 @@
 ## How to Contribute
 Thank you for wanting to contribute to this project! :tada::+1:
 
-> **Note**: This is a personal project for which I voluntary give my time.
+> **Note**: This is a personal project for which I voluntarily give my time.
 > I may not deal with your issue or pull request in a timely manner, or at all.
 > I also reserve the right to change your contribution in any way I deem fit
 > for this project, or even outright reject it.
