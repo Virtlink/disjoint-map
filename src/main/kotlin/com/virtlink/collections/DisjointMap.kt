@@ -2,17 +2,16 @@ package com.virtlink.collections
 
 /**
  * A map of key in disjoint sets with a value.
+ *
+ * @param K the type of keys
+ * @param V the type of values
  */
 interface DisjointMap<K, out V> {
 
-    /**
-     * Gets the number of sets in the collection.
-     */
+    /** The number of sets in the collection. */
     val size: Int
 
-    /**
-     * Determines whether the collection is empty.
-     */
+    /** Determines whether the collection is empty. */
     fun isEmpty(): Boolean = (size == 0)
 
     /**

@@ -8,6 +8,8 @@ package com.virtlink.collections
  * @param roots the map from sets to their values
  * @param parents the mutable map from keys to their parent key
  * @param ranks the mutable map from keys to their ranks
+ * @param K the type of keys
+ * @param V the type of values
  * @return the representative key, or the given key when it's
  * its own representative; or `null` when the key was not found
  */
@@ -43,11 +45,16 @@ internal fun <K, V> findMutable(key: K, roots: Map<K, V>, parents: MutableMap<K,
  *
  * @param key1 the first key
  * @param key2 the second key
- * @param default the function that provides a default value
- * @param unify the function that unifies the associated values of each of the sets
+ * @param default function that provides a default value
+ * @param compare function that compares the keys: the higher is used as the new representative;
+ * or 0 to use the rank to determine this
+ * @param unify function that unifies the associated values of each of the sets,
+ * where the first value is from the representative
  * @param roots the mutable map from sets to their values
  * @param parents the mutable map from keys to their parent key
  * @param ranks the mutable map from keys to their ranks
+ * @param K the type of keys
+ * @param V the type of values
  * @return whether disjoint sets have been unified
  */
 internal fun <K, V> unionMutable(key1: K, key2: K, default: () -> V, unify: (V, V) -> V, roots: MutableMap<K, V>, parents: MutableMap<K, K>, ranks: MutableMap<K, Int>): Boolean {
@@ -100,6 +107,8 @@ internal fun <K, V> unionMutable(key1: K, key2: K, default: () -> V, unify: (V, 
  * @param roots the mutable map from sets to their values
  * @param parents the mutable map from keys to their parent key
  * @param ranks the mutable map from keys to their ranks
+ * @param K the type of keys
+ * @param V the type of values
  * @return whether the key was in the map
  */
 internal fun <K, V> disunionMutable(key: K, roots: MutableMap<K, V>, parents: MutableMap<K, K>, ranks: MutableMap<K, Int>): Boolean {
@@ -138,6 +147,8 @@ internal fun <K, V> disunionMutable(key: K, roots: MutableMap<K, V>, parents: Mu
  * @param roots the mutable map from sets to their values
  * @param parents the mutable map from keys to their parent key
  * @param ranks the mutable map from keys to their ranks
+ * @param K the type of keys
+ * @param V the type of values
  * @return the old value associated with the key; or `null`
  */
 internal fun <K, V> setMutable(key: K, value: V, roots: MutableMap<K, V>, parents: MutableMap<K, K>, ranks: MutableMap<K, Int>): V? {
@@ -155,6 +166,8 @@ internal fun <K, V> setMutable(key: K, value: V, roots: MutableMap<K, V>, parent
  * @param rep the representative element of the set to set
  * @param value the value to associate with the set
  * @param roots the mutable map from sets to their values
+ * @param K the type of keys
+ * @param V the type of values
  */
 internal fun <K, V> setMutableRep(rep: K, value: V, roots: MutableMap<K, V>) {
     roots[rep] = value
@@ -169,6 +182,8 @@ internal fun <K, V> setMutableRep(rep: K, value: V, roots: MutableMap<K, V>) {
  * @param roots the mutable map from sets to their values
  * @param parents the mutable map from keys to their parent key
  * @param ranks the mutable map from keys to their ranks
+ * @param K the type of keys
+ * @param V the type of values
  * @return the value of the set from which the key was removed; or `null` when the key was not found
  */
 internal fun <K, V> removeMutable(key: K, roots: MutableMap<K, V>, parents: MutableMap<K, K>, ranks: MutableMap<K, Int>): V? {

@@ -4,6 +4,9 @@ import kotlinx.collections.immutable.ImmutableMap
 
 /**
  * An immutable disjoint map.
+ *
+ * @param K the type of keys
+ * @param V the type of values
  */
 interface ImmutableDisjointMap<K, out V> : DisjointMap<K, V> {
 
@@ -15,3 +18,4 @@ interface ImmutableDisjointMap<K, out V> : DisjointMap<K, V> {
     override fun toMap(): ImmutableMap<Set<K>, V>
 
 }
+

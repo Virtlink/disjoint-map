@@ -2,6 +2,9 @@ package com.virtlink.collections
 
 /**
  * A transient disjoint map.
+ *
+ * @param K the type of keys
+ * @param V the type of values
  */
 interface MutableDisjointMap<K, V> : DisjointMap<K, V> {
 
@@ -40,8 +43,11 @@ interface MutableDisjointMap<K, V> : DisjointMap<K, V> {
      *
      * @param key1 one key
      * @param key2 another key
-     * @param default the function that provides a default value to use when no value is specified
-     * @param unify the function that unifies the associated values of each of the sets
+     * @param default function that provides a default value to use when no value is specified
+     * @param compare function that compares the keys: the higher is used as the new representative;
+     * or 0 to use the rank to determine this
+     * @param unify function that unifies the associated values of each of the sets,
+     * where the first value is from the representative
      */
     fun union(key1: K, key2: K, default: () -> V, unify: (V, V) -> V)
 
