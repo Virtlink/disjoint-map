@@ -216,7 +216,7 @@ interface MutableDisjointMapTests : DisjointMapTests {
             )
 
             // Act
-            map.union("B", "D", { TODO() }, lift { _, _ -> throw IllegalStateException() })
+            map.union("B", "D", { TODO() }, unify = lift { _, _ -> throw IllegalStateException() })
 
             // Assert
             assertEquals(mapOf(
@@ -235,7 +235,7 @@ interface MutableDisjointMapTests : DisjointMapTests {
             )
 
             // Act
-            map.union("B", "D", { TODO() }, { v1, v2 -> v1 + v2 })
+            map.union("B", "D", { TODO() }) { v1, v2 -> v1 + v2 }
 
             // Assert
             assertEquals(mapOf(
@@ -254,7 +254,7 @@ interface MutableDisjointMapTests : DisjointMapTests {
             )
 
             // Act
-            map.union("B", "D", { TODO() }, { _, _ -> null })
+            map.union("B", "D", { TODO() }) { _, _ -> null }
 
             // Assert
             assertEquals(mapOf(

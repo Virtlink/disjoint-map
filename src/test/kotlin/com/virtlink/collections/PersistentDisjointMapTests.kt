@@ -211,7 +211,7 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             )
 
             // Act
-            val newMap = map.union("B", "D", { TODO() }, lift { _, _ -> throw IllegalStateException() })
+            val newMap = map.union("B", "D", { TODO() }, unify = lift { _, _ -> throw IllegalStateException() })
 
             // Assert
             assertEquals(mapOf(
@@ -230,7 +230,7 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             )
 
             // Act
-            val newMap = map.union("B", "D", { TODO() }, { v1, v2 -> v1 + v2 })
+            val newMap = map.union("B", "D", { TODO() }) { v1, v2 -> v1 + v2 }
 
             // Assert
             assertEquals(mapOf(
@@ -249,7 +249,7 @@ interface PersistentDisjointMapTests : ImmutableDisjointMapTests {
             )
 
             // Act
-            val newMap = map.union("B", "D", { TODO() }, { _, _ -> null })
+            val newMap = map.union("B", "D", { TODO() }) { _, _ -> null }
 
             // Assert
             assertEquals(mapOf(
