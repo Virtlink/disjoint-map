@@ -16,9 +16,11 @@ jobs:
       matrix:
         include:
           - os: 'ubuntu-latest'
-            java.version: '11'
-            gradle.version: 'wrapper'
-            gradle.command: './gradlew'
+            java:
+              version: '11'
+            gradle:
+              version: 'wrapper'
+              command: './gradlew'
     runs-on: ${{ matrix.os }}
     steps:
       - name: 'Checkout'
