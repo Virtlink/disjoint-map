@@ -14,13 +14,15 @@ jobs:
     name: 'Build'
     strategy:
       matrix:
-        os: ['ubuntu-latest']
-        java-version: ['11']
-        gradle-version: ['latest']
-        gradle-command: ['gradle']
-        include:
-          - gradle-version: 'wrapper'
-            gradle-command: './gradlew'
+        os:
+          - 'ubuntu-latest'
+        java:
+          - version: '11'
+        gradle:
+          - version: 'latest'
+            command: 'gradle'
+          - version: 'wrapper'
+            command: './gradlew'
     runs-on: ${{ matrix.os }}
     steps:
       - name: 'Checkout'
@@ -32,20 +34,20 @@ jobs:
           fetch-tags: true
       - name: 'Validate Gradle wrapper'
         uses: gradle/actions/wrapper-validation@v4
-      - name: "Setup JDK temurin ${{ matrix.java-version }}"
+      - name: "Setup JDK temurin ${{ matrix.java.version }}"
         uses: actions/setup-java@v4
         with:
-          java-version: ${{ matrix.java-version }}
+          java-version: ${{ matrix.java.version }}
           distribution: 'temurin'
-      - name: "Setup Gradle ${{ matrix.gradle-version }}"
+      - name: "Setup Gradle ${{ matrix.gradle.version }}"
         uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: ${{ matrix.gradle-version }}
+          gradle-version: ${{ matrix.gradle.version }}
           build-scan-publish: true
           build-scan-terms-of-use-url: "https://gradle.com/help/legal-terms-of-use"
           build-scan-terms-of-use-agree: "yes"
       - name: 'Build'
         run: |
-          ${{matrix.gradle-command}} build
+          ${{matrix.gradle.command}} build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
