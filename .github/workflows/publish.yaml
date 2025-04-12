@@ -16,28 +16,28 @@ jobs:
       matrix:
         include:
           - os: 'ubuntu-latest'
-            java-version: '11'
-            gradle-version: 'wrapper'
-            gradle-command: './gradlew'
+            java.version: '11'
+            gradle.version: 'wrapper'
+            gradle.command: './gradlew'
     runs-on: ${{ matrix.os }}
     steps:
       - name: 'Checkout'
         uses: actions/checkout@v4
       - name: 'Validate Gradle wrapper'
         uses: gradle/actions/wrapper-validation@v4
-      - name: "Setup JDK temurin ${{ matrix.java-version }}"
+      - name: "Setup JDK temurin ${{ matrix.java.version }}"
         uses: actions/setup-java@v4
         with:
-          java-version: ${{ matrix.java-version }}
+          java-version: ${{ matrix.java.version }}
           distribution: 'temurin'
-      - name: "Setup Gradle ${{ matrix.gradle-version }}"
+      - name: "Setup Gradle ${{ matrix.gradle.version }}"
         uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: ${{ matrix.gradle-version }}
+          gradle-version: ${{ matrix.gradle.version }}
           build-scan-publish: false   # Might contain private keys or sensitive information
       - name: 'Publish to Maven Central'
         run: |
-          ${{matrix.gradle-command}} assemble publish closeAndReleaseSonatypeStagingRepository
+          ${{matrix.gradle.command}} assemble publish closeAndReleaseSonatypeStagingRepository
         env:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
@@ -46,7 +46,7 @@ jobs:
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
       # Obtain the derived version number in the env.VERSION variable.
-      - run: echo "VERSION=$(${{matrix.gradle-command}} -q :printVersion)" >> $GITHUB_ENV
+      - run: echo "VERSION=$(${{matrix.gradle.command}} -q :printVersion)" >> $GITHUB_ENV
       - name: 'Release on GitHub'
         uses: softprops/action-gh-release@v2
         with:

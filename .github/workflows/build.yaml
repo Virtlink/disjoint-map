@@ -22,7 +22,7 @@ jobs:
           - version: 'current'  # Current stable
             command: 'gradle'
           - version: 'wrapper'
-            command: './gradlew'
+            command: './gradlew'  # Workaround for issue https://github.com/gradle/actions/issues/273
     runs-on: ${{ matrix.os }}
     steps:
       - name: 'Checkout'
