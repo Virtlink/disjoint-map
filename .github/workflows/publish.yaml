@@ -1,0 +1,54 @@
+---
+name: Publish
+
+on:  # yamllint disable-line rule:truthy
+  push:
+    tags:
+      - "*.*.*"
+
+jobs:
+  publish:
+    name: 'Publish'
+    permissions:
+      contents: write
+      packages: write
+    strategy:
+      matrix:
+        os: ['ubuntu-latest']               # Just one
+        java-version: ['8']                 # Just one
+        gradle-version: ['wrapper']         # Just one
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v4
+      - name: 'Validate Gradle wrapper'
+        uses: gradle/actions/wrapper-validation@v4
+      - name: "Setup JDK temurin ${{ matrix.java-version }}"
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ matrix.java-version }}
+          distribution: 'temurin'
+      - name: "Setup Gradle ${{ matrix.gradle-version }}"
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: ${{ matrix.gradle-version }}
+          build-scan-publish: false   # Might contain private keys or sensitive information
+      - name: 'Publish to Maven Central'
+        run: |
+          gradle assemble publish closeAndReleaseSonatypeStagingRepository
+        env:
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+      # Obtain the derived version number in the env.VERSION variable.
+      - run: echo "VERSION=$(gradle -q :printVersion)" >> $GITHUB_ENV
+      - name: 'Release on GitHub'
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "Release ${{ env.VERSION }}"
+          files: |
+            **/build/libs/*
+          fail_on_unmatched_files: true
