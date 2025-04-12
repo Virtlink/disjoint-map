@@ -1,17 +1,19 @@
 ## How to Contribute
 Thank you for wanting to contribute to this project! :tada::+1:
 
-> **Note**: This is a personal project for which I voluntarily give my time.
-> I may not deal with your issue or pull request in a timely manner, or at all.
-> I also reserve the right to change your contribution in any way I deem fit
+> **Note**:
+> We may not deal with your issue or pull request in a timely manner, or at all.
+> We also reserve the right to change your contribution in any way we deem fit
 > for this project, or even outright reject it.
 
 #### **You have a question?**
-Please go to [Stackoverflow](https://stackoverflow.com/) and ask your question there.
+Search the [Discussions][1] and [Stackoverflow][3] to see whether your question
+has already been answered, or ask your question there.
 Please do **not** make an issue on the Github repository.
 
+
 #### **You found a bug**
-Search the [Issues](https://github.com/Virtlink/disjoint-map/issues) to ensure the bug has not been reported before.
+Search the [Issues][2] to ensure the bug has not been reported before.
 
 If the bug is new, open a new issue with a _clear title and description_.
 Please indicate:
@@ -44,4 +46,8 @@ Thank you! Please open a GitHub pull request with the patch.
 
 Thanks! :heart: :heart: :heart:
 
-Daniel A. A. Pelsmaeker
+Daniel
+
+[1]: https://github.com/Virtlink/disjoint-map/discussions
+[2]: https://github.com/Virtlink/disjoint-map/issues
+[3]: https://stackoverflow.com/

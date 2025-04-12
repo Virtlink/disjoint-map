@@ -1,160 +1,160 @@
-import org.jetbrains.dokka.gradle.DokkaTask
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-//import com.jfrog.bintray.gradle.BintrayPlugin
-//import com.jfrog.bintray.gradle.BintrayExtension
-import java.util.Date
+//import org.jetbrains.dokka.gradle.DokkaTask
+import com.adarshr.gradle.testlogger.theme.ThemeType
 
 plugins {
-    java
+    `java-library`
     `maven-publish`
-    kotlin("jvm") version "1.5.31"
-    id("org.jetbrains.dokka") version "0.10.1"
+    signing
+    alias(libs.plugins.kotlin.jvm)
+//    alias(libs.plugins.dokka)               // Generate documentation
+    alias(libs.plugins.gitVersion)          // Set gitVersion() from last Git repository tag
+    alias(libs.plugins.benmanesVersions)    // Check for dependency updates
+    alias(libs.plugins.testlogger)          // Pretty-print test results live to console
+    alias(libs.plugins.nexuspublish)        // Publish on Maven Central
+    alias(libs.plugins.dependencycheck)     // Gradle dependency check
 }
 
-repositories {
-    mavenCentral()
+
+allprojects {
+    apply(plugin = "java-library")
+    apply(plugin = "maven-publish")
+    apply(plugin = "signing")
+    apply(plugin = "kotlin")
+    apply(plugin = "com.palantir.git-version")
+    apply(plugin = "com.github.ben-manes.versions")
+    apply(plugin = "com.adarshr.test-logger")
+
+    val gitVersion: groovy.lang.Closure<String> by extra
+
+    group = "dev.pelsmaeker"
+    version = gitVersion()
+    description = "A disjoint map implementation for the JVM."
+
+    extra["isSnapshotVersion"] = version.toString().endsWith("-SNAPSHOT")
+    extra["isDirtyVersion"] = version.toString().endsWith(".dirty")
+    extra["isCI"] = !System.getenv("CI").isNullOrEmpty()
+
+    repositories {
+        mavenCentral()
+    }
+
+    tasks.test {
+        useJUnitPlatform()
+        testlogger {
+            theme = ThemeType.MOCHA
+        }
+    }
+
+    kotlin {
+        jvmToolchain(11)
+    }
+
+    configure<JavaPluginExtension> {
+        withSourcesJar()
+//        withJavadocJar()
+    }
+
+    publishing {
+        publications {
+            create<MavenPublication>("mavenJava") {
+                from(components["java"])
+
+                pom {
+                    name.set("Disjoint Map")
+                    description.set(project.description)
+                    url.set("https://github.com/Virtlink/disjoint-map")
+                    inceptionYear.set("2023")
+                    licenses {
+                        // From: https://spdx.org/licenses/
+                        license {
+                            name.set("Apache-2.0")
+                            url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                            distribution.set("repo")
+                        }
+                    }
+                    developers {
+                        developer {
+                            id.set("virtlink")
+                            name.set("Daniel A. A. Pelsmaeker")
+                            email.set("d.a.a.pelsmaeker@tudelft.nl")
+                        }
+                    }
+                    scm {
+                        connection.set("scm:git@github.com:Virtlink/disjoint-map.git")
+                        developerConnection.set("scm:git@github.com:Virtlink/disjoint-map.git")
+                        url.set("scm:git@github.com:Virtlink/disjoint-map.git")
+                    }
+                }
+            }
+        }
+        repositories {
+            maven {
+                name = "GitHubPackages"
+                url = uri("https://maven.pkg.github.com/Virtlink/disjoint-map")
+                credentials {
+                    username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
+                    password = project.findProperty("gpr.publishKey") as String? ?: System.getenv("GITHUB_TOKEN")
+                }
+            }
+        }
+    }
+
+    signing {
+        sign(publishing.publications["mavenJava"])
+        if (!project.hasProperty("signing.secretKeyRingFile")) {
+            // If no secretKeyRingFile was set, we assume an in-memory key in the SIGNING_KEY environment variable (used in CI)
+            useInMemoryPgpKeys(
+                project.findProperty("signing.keyId") as String? ?: System.getenv("SIGNING_KEY_ID"),
+                System.getenv("SIGNING_KEY"),
+                project.findProperty("signing.password") as String? ?: System.getenv("SIGNING_KEY_PASSWORD"),
+            )
+        }
+    }
+
+    val checkNotDirty by tasks.registering {
+        doLast {
+            if (project.extra["isDirtyVersion"] as Boolean) {
+                throw GradleException("Cannot publish a dirty version: ${project.version}")
+            }
+        }
+    }
+
+    tasks.publish { dependsOn(checkNotDirty) }
+
+//    tasks.withType<DokkaTask>().configureEach {
+
+//        outputFormat = "html"
+//        outputDirectory = "$buildDir/javadoc"
+//        configuration {
+//            sourceLink {
+//                path = "src/main/kotlin"
+//                url = "https://github.com/virtlink/disjoint-map/tree/master/src/main/kotlin"
+//                lineSuffix = "#L"
+//            }
+//        }
+//    }
+
+//    val dokkaJar by tasks.creating(Jar::class) {
+//        group = JavaBasePlugin.DOCUMENTATION_GROUP
+//        description = "Assembles Kotlin docs with Dokka"
+//        classifier = "javadoc"
+//        from(tasks.dokka)
+//    }
+//
+//    val sourcesJar by tasks.creating(Jar::class) {
+//        archiveClassifier.set("sources")
+//        from(sourceSets.getByName("main").allSource)
+//    }
 }
 
-val junitVersion = "5.8.1"
 
-dependencies {
-    implementation      (kotlin("stdlib-jdk8"))
-    implementation      ("org.jetbrains.kotlinx:kotlinx-collections-immutable-jvm:0.3.4")
-
-    compileOnly         ("com.google.code.findbugs:jsr305:3.0.2")
-
-    testImplementation  ("org.junit.jupiter:junit-jupiter-api:$junitVersion")
-    testRuntimeOnly     ("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
-}
-
-configure<JavaPluginExtension> {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-}
-
-tasks.withType<KotlinCompile>().configureEach {
-    kotlinOptions.jvmTarget = "1.8"
-}
-
-tasks.named<Test>("test") {
-    useJUnitPlatform()
-}
-
-tasks.dokka {
-    outputFormat = "html"
-    outputDirectory = "$buildDir/javadoc"
-    configuration {
-        sourceLink {
-            path = "src/main/kotlin"
-            url = "https://github.com/virtlink/disjoint-map/tree/master/src/main/kotlin"
-            lineSuffix = "#L"
+nexusPublishing {
+    repositories {
+        sonatype {
+            nexusUrl.set(uri("https://oss.sonatype.org/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://oss.sonatype.org/content/repositories/snapshots/"))
+            username.set(project.findProperty("ossrh.user") as String? ?: System.getenv("OSSRH_USERNAME"))
+            password.set(project.findProperty("ossrh.token") as String? ?: System.getenv("OSSRH_TOKEN"))
         }
     }
 }
-
-val dokkaJar by tasks.creating(Jar::class) {
-    group = JavaBasePlugin.DOCUMENTATION_GROUP
-    description = "Assembles Kotlin docs with Dokka"
-    classifier = "javadoc"
-    from(tasks.dokka)
-}
-
-val sourcesJar by tasks.creating(Jar::class) {
-    archiveClassifier.set("sources")
-    from(sourceSets.getByName("main").allSource)
-}
-
-//val githubRepo: String by project
-//val githubReadme: String by project
-//
-//val pomUrl: String by project
-//val pomIssueUrl: String by project
-//val pomLicenseName: String by project
-//val pomLicenseUrl: String by project
-//val pomLicenseDist: String by project
-//val pomDeveloperId: String by project
-//val pomDeveloperName: String by project
-//val pomScmUrl: String by project
-//val pomScmConnection: String by project
-//val pomScmDevConnection: String by project
-
-//publishing {
-//    publications {
-//        create<MavenPublication>("lib") {
-//            from(components["java"])
-//            artifact(dokkaJar)
-//            artifact(sourcesJar)
-//
-//            pom.withXml {
-//                asNode().apply {
-//                    appendNode("name", rootProject.name)
-//                    appendNode("description", project.description)
-//                    appendNode("url", pomUrl)
-//                    appendNode("licenses").appendNode("license").apply {
-//                        appendNode("name", pomLicenseName)
-//                        appendNode("url", pomLicenseUrl)
-//                        appendNode("distribution", pomLicenseDist)
-//                    }
-//                    appendNode("developers").appendNode("developer").apply {
-//                        appendNode("id", pomDeveloperId)
-//                        appendNode("name", pomDeveloperName)
-//                    }
-//                    appendNode("scm").apply {
-//                        appendNode("url", pomScmUrl)
-//                        appendNode("connection", pomScmConnection)
-//                        appendNode("developerConnection", pomScmDevConnection)
-//                    }
-//                }
-//            }
-//        }
-//    }
-//
-//    repositories {
-//        maven {
-//            name = "GitHubPackages"
-//            url = uri("https://maven.pkg.github.com/virtlink/disjoint-map")
-//            credentials {
-//                username = System.getenv("GITHUB_ACTOR")
-//                password = System.getenv("GITHUB_TOKEN")
-//            }
-//        }
-//    }
-//}
-
-//bintray {
-//    user = project.findProperty("bintrayUser").toString()
-//    key = project.findProperty("bintrayKey").toString()
-//    setPublications("lib")
-//    publish = true
-//
-//    pkg.apply {
-//        name = project.name
-//        desc = project.description
-//        websiteUrl = pomUrl
-//        issueTrackerUrl = pomIssueUrl
-//        vcsUrl = pomUrl + ".git"
-//        githubRepo = githubRepo
-//        setLicenses("Apache-2.0")
-//        repo = project.findProperty("bintrayRepo").toString()
-//        publicDownloadNumbers = true
-//        setLabels("kotlin", "disjoint", "map", "set", "collection")
-//
-//        githubReleaseNotesFile = githubReadme
-//
-//        version.apply {
-//            name = project.version.toString()
-//            desc = project.description
-//            released = Date().toString()
-//            vcsTag = project.version.toString()
-//            gpg.apply {
-//                sign = true
-//                passphrase = project.findProperty("gpgPassphrase").toString()
-//            }
-//            mavenCentralSync.apply {
-//                sync = true
-//                user = project.findProperty("sonatypeUsername").toString()
-//                password = project.findProperty("sonatypePassword").toString()
-//            }
-//        }
-//    }
-//}

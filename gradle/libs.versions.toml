@@ -1,0 +1,47 @@
+[versions]
+# Plugins
+kotlin                          = "2.1.20"                  # https://kotlinlang.org/
+dokka                           = "2.0.0"                   # https://github.com/Kotlin/dokka
+gitVersion                      = "3.2.0"                   # https://github.com/palantir/gradle-git-version
+benmanesVersions                = "0.52.0"                  # https://github.com/ben-manes/gradle-versions-plugin
+testlogger                      = "4.0.0"                   # https://github.com/radarsh/gradle-test-logger-plugin
+nexuspublish                    = "2.0.0"                   # https://github.com/gradle-nexus/publish-plugin/
+dependencycheck                 = "12.1.1"                  # https://github.com/dependency-check/dependency-check-gradle
+# Annotations & Annotation Processors
+jsr305                          = "3.0.2"                   # https://github.com/findbugsproject/findbugs
+# Utils
+kotlinx-immutablecollections    = "0.3.8"                   # https://github.com/Kotlin/kotlinx.collections.immutable
+# Testing
+junit                           = "5.10.1"                  # https://junit.org/
+junit4                          = "4.13.2"                  # https://junit.org/junit4/
+kotest                          = "5.9.1"                   # https://kotest.io/ (https://github.com/kotest/kotest)
+
+
+[plugins]
+kotlin-jvm                                  = { id = "org.jetbrains.kotlin.jvm",                                        version.ref = "kotlin" }
+dokka                                       = { id = "org.jetbrains.dokka",                                             version.ref = "dokka" }
+gitVersion                                  = { id = "com.palantir.git-version",                                        version.ref = "gitVersion" }
+benmanesVersions                            = { id = "com.github.ben-manes.versions",                                   version.ref = "benmanesVersions" }
+testlogger                                  = { id = "com.adarshr.test-logger",                                         version.ref = "testlogger"}
+nexuspublish                                = { id = "io.github.gradle-nexus.publish-plugin",                           version.ref = "nexuspublish" }
+dependencycheck                             = { id = "org.owasp.dependencycheck",                                       version.ref = "dependencycheck" }
+
+
+[libraries]
+# Annotations & Annotation Processing
+jsr305                                      = { module = "com.google.code.findbugs:jsr305",                             version.ref = "jsr305" }
+
+# Utils
+kotlinx-immutablecollections                = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable-jvm",     version.ref = "kotlinx-immutablecollections" }
+
+# Testing
+junit                                       = { module = "org.junit.jupiter:junit-jupiter",                             version.ref = "junit" }
+junit-engine                                = { module = "org.junit.jupiter:junit-jupiter-engine",                      version.ref = "junit" }
+junit-api                                   = { module = "org.junit.jupiter:junit-jupiter-api",                         version.ref = "junit" }
+junit-params                                = { module = "org.junit.jupiter:junit-jupiter-params",                      version.ref = "junit" }
+junit-vintage                               = { module = "org.junit.vintage:junit-vintage-engine",                      version.ref = "junit" }
+junit4                                      = { module = "junit:junit",                                                 version.ref = "junit4" }
+kotest                                      = { module = "io.kotest:kotest-runner-junit5",                              version.ref = "kotest" }
+kotest-assertions                           = { module = "io.kotest:kotest-assertions-core",                            version.ref = "kotest" }
+kotest-datatest                             = { module = "io.kotest:kotest-framework-datatest",                         version.ref = "kotest" }
+kotest-property                             = { module = "io.kotest:kotest-property",                                   version.ref = "kotest" }
