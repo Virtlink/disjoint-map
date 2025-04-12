@@ -14,9 +14,11 @@ jobs:
       packages: write
     strategy:
       matrix:
-        os: ['ubuntu-latest']               # Just one
-        java-version: ['8']                 # Just one
-        gradle-version: ['7.2']             # Just one
+        include:
+          - os: 'ubuntu-latest'
+            java-version: '11'
+            gradle-version: 'wrapper'
+            gradle-command: './gradlew'
     runs-on: ${{ matrix.os }}
     steps:
       - name: 'Checkout'
@@ -35,7 +37,7 @@ jobs:
           build-scan-publish: false   # Might contain private keys or sensitive information
       - name: 'Publish to Maven Central'
         run: |
-          gradle assemble publish closeAndReleaseSonatypeStagingRepository
+          ${{matrix.gradle-command}} assemble publish closeAndReleaseSonatypeStagingRepository
         env:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
@@ -44,7 +46,7 @@ jobs:
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
       # Obtain the derived version number in the env.VERSION variable.
-      - run: echo "VERSION=$(gradle -q :printVersion)" >> $GITHUB_ENV
+      - run: echo "VERSION=$(${{matrix.gradle-command}} -q :printVersion)" >> $GITHUB_ENV
       - name: 'Release on GitHub'
         uses: softprops/action-gh-release@v2
         with:

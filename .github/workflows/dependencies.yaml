@@ -14,9 +14,10 @@ jobs:
     name: 'Submit Dependencies'
     strategy:
       matrix:
-        os: ['ubuntu-latest']               # Just one
-        java-version: ['11']                # Just one
-        gradle-version: ['7.2']             # Just one
+        include:
+          - os: 'ubuntu-latest'
+            java-version: '11'
+            gradle-version: 'wrapper'
     runs-on: ${{ matrix.os }}
     steps:
       - name: 'Checkout'

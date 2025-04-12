@@ -4,10 +4,10 @@ name: Build
 on:  # yamllint disable-line rule:truthy
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
   build:
@@ -15,8 +15,12 @@ jobs:
     strategy:
       matrix:
         os: ['ubuntu-latest']
-        java-version: ['8']
-        gradle-version: ['7.2']
+        java-version: ['11']
+        gradle-version: ['latest']
+        gradle-command: ['gradle']
+        include:
+          - gradle-version: 'wrapper'
+            gradle-command: './gradlew'
     runs-on: ${{ matrix.os }}
     steps:
       - name: 'Checkout'
@@ -42,6 +46,6 @@ jobs:
           build-scan-terms-of-use-agree: "yes"
       - name: 'Build'
         run: |
-          gradle build
+          ${{matrix.gradle-command}} build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
