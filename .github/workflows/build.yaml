@@ -19,7 +19,7 @@ jobs:
         java:
           - version: '11'
         gradle:
-          - version: 'latest'
+          - version: 'current'  # Current stable
             command: 'gradle'
           - version: 'wrapper'
             command: './gradlew'
