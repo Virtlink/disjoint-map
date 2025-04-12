@@ -16,7 +16,7 @@ jobs:
       matrix:
         os: ['ubuntu-latest']               # Just one
         java-version: ['8']                 # Just one
-        gradle-version: ['wrapper']         # Just one
+        gradle-version: ['7.2']             # Just one
     runs-on: ${{ matrix.os }}
     steps:
       - name: 'Checkout'
