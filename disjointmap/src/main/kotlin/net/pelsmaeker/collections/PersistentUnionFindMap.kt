@@ -5,14 +5,14 @@ import kotlinx.collections.immutable.*
 /**
  * A persistent union-find map.
  *
- * @property _roots maps each key to its value. This map contains only entries
+ * @param K The type of keys.
+ * @param V The type of values.
+ * @property _roots Maps each key to its value. This map contains only entries
  * for those keys that are root keys.
- * @property _parents maps each key to its parent key. This map contains only entries
+ * @property _parents Maps each key to its parent key. This map contains only entries
  * for those keys that are not root keys.
- * @property _ranks maps a key to its rank, which is the number of keys it represents, including itself.
+ * @property _ranks Maps a key to its rank, which is the number of keys it represents, including itself.
  * This map contains only entries for those keys that have a rank greater than one.
- * @param K the type of keys
- * @param V the type of values
  */
 class PersistentUnionFindMap<K, V> internal constructor(
     private val _roots: PersistentMap<K, V>,

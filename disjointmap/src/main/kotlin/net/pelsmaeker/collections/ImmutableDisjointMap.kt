@@ -13,7 +13,7 @@ interface ImmutableDisjointMap<K, out V> : DisjointMap<K, V> {
     /**
      * Copies the sets from this disjoint map to a new map.
      *
-     * @return the new map
+     * @return The new map.
      */
     override fun toMap(): ImmutableMap<Set<K>, V>
 

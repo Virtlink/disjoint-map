@@ -6,14 +6,14 @@ import kotlinx.collections.immutable.toPersistentSet
  * Finds the representative key for the given key
  * and performs path compression.
  *
- * @param key the key for which to find the representative key
- * @param roots the map from sets to their values
- * @param parents the mutable map from keys to their parent key
- * @param ranks the mutable map from keys to their ranks
- * @param K the type of keys
- * @param V the type of values
- * @return the representative key, or the given key when it's
- * its own representative; or `null` when the key was not found
+ * @param K The type of keys.
+ * @param V The type of values.
+ * @param key The key for which to find the representative key.
+ * @param roots The map from sets to their values.
+ * @param parents The mutable map from keys to their parent key.
+ * @param ranks The mutable map from keys to their ranks.
+ * @return The representative key, or the given key when it's
+ * its own representative; or `null` when the key was not found.
  */
 internal fun <K, V> findMutable(
     key: K,
@@ -50,19 +50,19 @@ internal fun <K, V> findMutable(
  *
  * When one or both of the keys don't exist in the map, they are added.
  *
- * @param key1 the first key
- * @param key2 the second key
- * @param default function that provides a default value
- * @param compare function that compares the keys: the higher is used as the new representative;
- * or 0 to use the rank to determine this
- * @param unify function that unifies the associated values of each of the sets,
- * where the first value is from the representative
- * @param roots the mutable map from sets to their values
- * @param parents the mutable map from keys to their parent key
- * @param ranks the mutable map from keys to their ranks
- * @param K the type of keys
- * @param V the type of values
- * @return whether disjoint sets have been unified
+ * @param K The type of keys.
+ * @param V The type of values.
+ * @param key1 The first key.
+ * @param key2 The second key.
+ * @param default Function that provides a default value.
+ * @param compare Function that compares the keys: the higher is used as the new representative;
+ * or 0 to use the rank to determine this.
+ * @param unify Function that unifies the associated values of each of the sets,
+ * where the first value is from the representative.
+ * @param roots The mutable map from sets to their values.
+ * @param parents The mutable map from keys to their parent key.
+ * @param ranks The mutable map from keys to their ranks.
+ * @return Whether disjoint sets have been unified.
  */
 @Suppress("UNCHECKED_CAST")
 internal fun <K, V> unionMutable(
@@ -132,13 +132,13 @@ internal fun <K, V> unionMutable(
  * This will create a new set with the given key and the value of the original set.
  * When the key doesn't exist, nothing happens.
  *
- * @param key the key to disunify
- * @param roots the mutable map from sets to their values
- * @param parents the mutable map from keys to their parent key
- * @param ranks the mutable map from keys to their ranks
- * @param K the type of keys
- * @param V the type of values
- * @return whether the key was in the map
+ * @param K The type of keys.
+ * @param V The type of values.
+ * @param key The key to disunify.
+ * @param roots The mutable map from sets to their values.
+ * @param parents The mutable map from keys to their parent key.
+ * @param ranks The mutable map from keys to their ranks.
+ * @return Whether the key was in the map.
  */
 internal fun <K, V> disunionMutable(key: K, roots: MutableMap<K, V>, parents: MutableMap<K, K>, ranks: MutableMap<K, Int>): Boolean {
     var rep: K = findMutable(key, roots, parents, ranks) ?: return false
@@ -171,14 +171,14 @@ internal fun <K, V> disunionMutable(key: K, roots: MutableMap<K, V>, parents: Mu
  *
  * When the key doesn't exist in the map, it is added.
  *
- * @param key the key of the set to set
- * @param value the value to associate with the set
- * @param roots the mutable map from sets to their values
- * @param parents the mutable map from keys to their parent key
- * @param ranks the mutable map from keys to their ranks
- * @param K the type of keys
- * @param V the type of values
- * @return the old value associated with the key; or `null`
+ * @param K The type of keys.
+ * @param V The type of values.
+ * @param key The key of the set to set.
+ * @param value The value to associate with the set.
+ * @param roots The mutable map from sets to their values.
+ * @param parents The mutable map from keys to their parent key.
+ * @param ranks The mutable map from keys to their ranks.
+ * @return The old value associated with the key; or `null`.
  */
 internal fun <K, V> setMutable(key: K, value: V, roots: MutableMap<K, V>, parents: MutableMap<K, K>, ranks: MutableMap<K, Int>): V? {
     val rep = findMutable(key, roots, parents, ranks) ?: key
@@ -192,11 +192,11 @@ internal fun <K, V> setMutable(key: K, value: V, roots: MutableMap<K, V>, parent
  *
  * When the key doesn't exist in the map, it is added.
  *
- * @param rep the representative element of the set to set
- * @param value the value to associate with the set
- * @param roots the mutable map from sets to their values
- * @param K the type of keys
- * @param V the type of values
+ * @param K The type of keys.
+ * @param V The type of values.
+ * @param rep The representative element of the set to set.
+ * @param value The value to associate with the set.
+ * @param roots The mutable map from sets to their values.
  */
 internal fun <K, V> setMutableRep(rep: K, value: V, roots: MutableMap<K, V>) {
     roots[rep] = value
@@ -207,13 +207,13 @@ internal fun <K, V> setMutableRep(rep: K, value: V, roots: MutableMap<K, V>) {
  *
  * When the key is the last key of a set, the set is removed.
  *
- * @param key the key to remove
- * @param roots the mutable map from sets to their values
- * @param parents the mutable map from keys to their parent key
- * @param ranks the mutable map from keys to their ranks
- * @param K the type of keys
- * @param V the type of values
- * @return the value of the set from which the key was removed; or `null` when the key was not found
+ * @param K The type of keys.
+ * @param V The type of values.
+ * @param key The key to remove.
+ * @param roots The mutable map from sets to their values.
+ * @param parents The mutable map from keys to their parent key.
+ * @param ranks The mutable map from keys to their ranks.
+ * @return The value of the set from which the key was removed; or `null` when the key was not found.
  */
 internal fun <K, V> removeMutable(
     key: K,
@@ -230,7 +230,7 @@ internal fun <K, V> removeMutable(
 /**
  * Copies the sets from this disjoint map to a new map.
  *
- * @return the new map
+ * @return The new map.
  */
 internal fun <K, V> DisjointMap<K, V>.toMapImpl(
     roots: Map<K, V>,
