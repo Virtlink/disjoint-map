@@ -6,7 +6,7 @@ plugins {
     `maven-publish`
     signing
     alias(libs.plugins.kotlin.jvm)
-//    alias(libs.plugins.dokka)               // Generate documentation
+    alias(libs.plugins.dokka)               // Generate documentation
     alias(libs.plugins.gitVersion)          // Set gitVersion() from last Git repository tag
     alias(libs.plugins.benmanesVersions)    // Check for dependency updates
     alias(libs.plugins.testlogger)          // Pretty-print test results live to console
@@ -20,6 +20,7 @@ allprojects {
     apply(plugin = "maven-publish")
     apply(plugin = "signing")
     apply(plugin = "kotlin")
+    apply(plugin = "org.jetbrains.dokka")
     apply(plugin = "com.palantir.git-version")
     apply(plugin = "com.github.ben-manes.versions")
     apply(plugin = "com.adarshr.test-logger")
@@ -51,7 +52,7 @@ allprojects {
 
     configure<JavaPluginExtension> {
         withSourcesJar()
-//        withJavadocJar()
+        withJavadocJar()
     }
 
     publishing {
@@ -121,30 +122,19 @@ allprojects {
 
     tasks.publish { dependsOn(checkNotDirty) }
 
-//    tasks.withType<DokkaTask>().configureEach {
-
-//        outputFormat = "html"
-//        outputDirectory = "$buildDir/javadoc"
-//        configuration {
-//            sourceLink {
-//                path = "src/main/kotlin"
-//                url = "https://github.com/virtlink/disjoint-map/tree/master/src/main/kotlin"
-//                lineSuffix = "#L"
-//            }
-//        }
-//    }
-
-//    val dokkaJar by tasks.creating(Jar::class) {
-//        group = JavaBasePlugin.DOCUMENTATION_GROUP
-//        description = "Assembles Kotlin docs with Dokka"
-//        classifier = "javadoc"
-//        from(tasks.dokka)
-//    }
-//
-//    val sourcesJar by tasks.creating(Jar::class) {
-//        archiveClassifier.set("sources")
-//        from(sourceSets.getByName("main").allSource)
-//    }
+    dokka {
+        moduleName.set("Disjoint Map")
+        dokkaPublications.html {
+            failOnWarning.set(true)
+        }
+        dokkaSourceSets.main {
+            sourceLink {
+                localDirectory.set(file("src/main/kotlin"))
+                remoteUrl("https://github.com/virtlink/disjoint-map/tree/master/src/main/kotlin")
+                remoteLineSuffix.set("#L")
+            }
+        }
+    }
 }
 
 
