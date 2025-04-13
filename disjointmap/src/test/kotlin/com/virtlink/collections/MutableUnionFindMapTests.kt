@@ -1,9 +1,9 @@
 package com.virtlink.collections
 
-@Suppress("unused", "ClassName")
-open class MutableUnionFindMapTests : MutableDisjointMapTests {
+import io.kotest.core.spec.style.FunSpec
 
-    override fun <K, V> create(initial: Iterable<DisjointSet<K, V>>): MutableUnionFindMap<K, V> {
+object MutableUnionFindMapFactory: MutableDisjointMapFactory {
+    override fun <K, V> create(initial: Map<Set<K>, V>): MutableDisjointMap<K, V> {
         val roots = mutableMapOf<K, V>()
         val parents = mutableMapOf<K, K>()
         val ranks = mutableMapOf<K, Int>()
@@ -12,16 +12,8 @@ open class MutableUnionFindMapTests : MutableDisjointMapTests {
 
         return MutableUnionFindMap(roots, parents, ranks)
     }
-
-    // @formatter:off
-    class `set()`               : MutableUnionFindMapTests(), MutableDisjointMapTests.`set()`
-    class `remove()`            : MutableUnionFindMapTests(), MutableDisjointMapTests.`remove()`
-    class `clear()`             : MutableUnionFindMapTests(), MutableDisjointMapTests.`clear()`
-    class `union()`             : MutableUnionFindMapTests(), MutableDisjointMapTests.`union()`
-    class `disunion()`          : MutableUnionFindMapTests(), MutableDisjointMapTests.`disunion()`
-    class `compute()`           : MutableUnionFindMapTests(), MutableDisjointMapTests.`compute()`
-    class `computeIfPresent()`  : MutableUnionFindMapTests(), MutableDisjointMapTests.`computeIfPresent()`
-    class `computeIfAbsent()`   : MutableUnionFindMapTests(), MutableDisjointMapTests.`computeIfAbsent()`
-    // @formatter:on
-
 }
+
+class MutableUnionFindMapTests: FunSpec({
+    include(testMutableDisjointMap(MutableUnionFindMapFactory))
+})

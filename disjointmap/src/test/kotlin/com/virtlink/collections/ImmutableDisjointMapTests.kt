@@ -1,11 +1,17 @@
 package com.virtlink.collections
 
-/**
- * Tests the [ImmutableDisjointMap] interface.
- */
-@Suppress("ClassName", "unused", "RemoveRedundantBackticks")
-interface ImmutableDisjointMapTests: DisjointMapTests {
+import io.kotest.core.spec.style.funSpec
 
-    override fun <K, V> create(initial: Iterable<DisjointSet<K, V>>): ImmutableDisjointMap<K, V>
+interface ImmutableDisjointMapFactory {
+    fun <K, V> create(initial: Map<Set<K>, V> = emptyMap()): ImmutableDisjointMap<K, V>
+}
 
+fun testImmutableDisjointMap(
+    factory: ImmutableDisjointMapFactory,
+) = funSpec {
+    include(testDisjointMap(object: DisjointMapFactory {
+        override fun <K, V> create(initial: Map<Set<K>, V>): DisjointMap<K, V> {
+            return factory.create(initial)
+        }
+    }))
 }

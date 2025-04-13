@@ -1,454 +1,459 @@
 package com.virtlink.collections
 
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.Test
+import io.kotest.core.spec.style.funSpec
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 
-/**
- * Tests the [DisjointMap] interface.
- */
-@Suppress("ClassName", "unused", "RemoveRedundantBackticks")
-interface DisjointMapTests {
+interface DisjointMapFactory {
+    fun <K, V> create(initial: Map<Set<K>, V> = emptyMap()): DisjointMap<K, V>
+}
 
-    fun <K, V> create(initial: Iterable<DisjointSet<K, V>> = emptyList()): DisjointMap<K, V>
-
-    /**
-     * Tests the [DisjointMap.size] property.
-     */
-    interface `size`: DisjointMapTests {
-        @Test
-        fun `returns zero for empty map`() {
+fun testDisjointMap(
+    factory: DisjointMapFactory,
+) = funSpec {
+    context("size") {
+        test("should return zero, when the map is empty") {
             // Arrange
-            val map = create<String, String>()
+            val map = factory.create<String, String>()
 
             // Assert
-            assertEquals(0, map.size)
+            map.size shouldBe 0
         }
 
-        @Test
-        fun `returns number of representative if each has its own value`() {
+        test("should return the number of representatives, when each has its own value") {
             // Arrange
-            val map = create(
-                listOf(
-                    DisjointSet(setOf("A"), "Va"),
-                    DisjointSet(setOf("B"), "V"),
-                    DisjointSet(setOf("C"), "V")
+            val map = factory.create(
+                mapOf(
+                    setOf("A") to "Va",
+                    setOf("B") to "V",
+                    setOf("C") to "V",
                 )
             )
 
             // Assert
-            assertEquals(3, map.size)
+            map.size shouldBe 3
         }
 
-        @Test
-        fun `returns number of keys`() {
+        test("should return the number of keys") {
             // Arrange
-            val map = create(
-                listOf(
-                    DisjointSet(setOf("A1", "A2", "A3"), "Va"),
-                    DisjointSet(setOf("B1", "B2"), "V"),
-                    DisjointSet(setOf("C1"), "V")
+            val map = factory.create(
+                mapOf(
+                    setOf("A1", "A2", "A3") to "Va",
+                    setOf("B1", "B2") to "V",
+                    setOf("C1") to "V",
                 )
             )
 
             // Assert
-            assertEquals(6, map.size)
+            map.size shouldBe 6
         }
     }
 
-    /**
-     * Tests the [DisjointMap.isEmpty()] method.
-     */
-    interface `isEmpty()`: DisjointMapTests {
-        @Test
-        fun `returns true for empty map`() {
+    context("isEmpty()") {
+        test("should return true, when the map is empty") {
             // Arrange
-            val map = create<String, String>()
+            val map = factory.create<String, String>()
 
             // Assert
-            assertTrue(map.isEmpty())
+            map.isEmpty() shouldBe true
         }
 
-        @Test
-        fun `returns false for map where each representative has its own value `() {
+        test("should return false, when the map is not empty") {
             // Arrange
-            val map = create(
-                listOf(
-                    DisjointSet(setOf("A"), "Va"),
-                    DisjointSet(setOf("B"), "V"),
-                    DisjointSet(setOf("C"), "V")
+            val map = factory.create(
+                mapOf(
+                    setOf("A") to "Va",
+                    setOf("B") to "V",
+                    setOf("C") to "V",
                 )
             )
 
             // Assert
-            assertFalse(map.isEmpty())
+            map.isEmpty() shouldBe false
         }
 
-        @Test
-        fun `returns false when there are multiple keys`() {
+        test("should return false, when there are multiple keys") {
             // Arrange
-            val map = create(
-                listOf(
-                    DisjointSet(setOf("A1", "A2", "A3"), "Va"),
-                    DisjointSet(setOf("B1", "B2"), "V"),
-                    DisjointSet(setOf("C1"), "V")
+            val map = factory.create(
+                mapOf(
+                    setOf("A1", "A2", "A3") to "Va",
+                    setOf("B1", "B2") to "V",
+                    setOf("C1") to "V",
                 )
             )
 
             // Assert
-            assertFalse(map.isEmpty())
+            map.isEmpty() shouldBe false
         }
     }
 
-    /**
-     * Tests the [DisjointMap.get] method.
-     */
-    interface `get()`: DisjointMapTests {
-        @Test
-        fun `returns null when key not found`() {
+    context("get()") {
+        test("should return null, when the map is empty") {
             // Arrange
-            val map = create(
-                listOf(
-                    DisjointSet(setOf("A", "B", "C"), "V")
+            val map = factory.create<String, String>()
+
+            // Act
+            val result = map["A"]
+
+            // Assert
+            result shouldBe null
+        }
+
+        test("should return null, when the key does not exist") {
+            // Arrange
+            val map = factory.create(
+                mapOf(
+                    setOf("A") to "Va",
+                    setOf("B") to "V",
+                    setOf("C") to "V",
                 )
             )
 
             // Act
-            val value = map["X"]
+            val result = map["D"]
 
             // Assert
-            assertNull(value)
+            result shouldBe null
         }
 
-        @Test
-        fun `returns value when key found as representative`() {
+        test("should return the value, when the key exists as a representative") {
             // Arrange
-            val map = create(
-                listOf(
-                    DisjointSet(setOf("A", "B", "C"), "V")
+            val map = factory.create(
+                mapOf(
+                    setOf("A", "B", "C") to "V",
                 )
             )
 
             // Assume
-            assert(map.find("A") == "A") { "A must be the representative" }
+            map.find("A") shouldBe "A"  // Representative
 
             // Act
-            val value = map["A"]
+            val result = map["A"]
 
             // Assert
-            assertEquals("V", value)
+            result shouldBe "V"
         }
 
-        @Test
-        fun `returns value when key found not as representative`() {
+        test("should return the value, when the key exists but not as a representative") {
             // Arrange
-            val map = create(
-                listOf(
-                    DisjointSet(setOf("A", "B", "C"), "V")
+            val map = factory.create(
+                mapOf(
+                    setOf("A", "B", "C") to "V",
                 )
             )
 
             // Assume
-            assert(map.find("B") != "B") { "B must not be the representative" }
+            map.find("B") shouldNotBe "B" // Not representative
 
             // Act
-            val value = map["B"]
+            val result = map["B"]
 
             // Assert
-            assertEquals("V", value)
+            result shouldBe "V"
         }
 
-        @Test
-        fun `returns null when value is null`() {
+        test("should return null, when the value is null") {
             // Arrange
-            val map = create(
-                listOf(
-                    DisjointSet(setOf("A", "B", "C"), null as String?)
+            val map = factory.create(
+                mapOf(
+                    setOf("A", "B", "C") to (null as String?),
                 )
             )
 
             // Assume
-            assert(map.find("A") == "A") { "A must be the representative" }
+            map.find("A") shouldBe "A" // Representative
 
             // Act
-            val value = map["A"]
+            val result = map["A"]
 
             // Assert
-            assertNull(value)
+            result shouldBe null
         }
-
     }
 
-    /**
-     * Tests the [DisjointMap.getOrDefault] method.
-     */
-    interface `getOrDefault()`: DisjointMapTests {
-        @Test
-        fun `returns default when key not found`() {
+    context("getOrDefault()") {
+        test("should return the default value, when the map is empty") {
             // Arrange
-            val map = create(
-                listOf(
-                    DisjointSet(setOf("A", "B", "C"), "V")
+            val map = factory.create<String, String>()
+
+            // Act
+            val result = map.getOrDefault("A", "default")
+
+            // Assert
+            result shouldBe "default"
+        }
+
+        test("should return the default value, when the key does not exist") {
+            // Arrange
+            val map = factory.create(
+                mapOf(
+                    setOf("A") to "Va",
+                    setOf("B") to "V",
+                    setOf("C") to "V",
                 )
             )
 
             // Act
-            val value = map.getOrDefault("X", "default")
+            val result = map.getOrDefault("D", "default")
 
             // Assert
-            assertEquals("default", value)
+            result shouldBe "default"
         }
 
-        @Test
-        fun `returns value when key found`() {
+        test("should return the value, when the key exists as a representative") {
             // Arrange
-            val map = create(
-                listOf(
-                    DisjointSet(setOf("A", "B", "C"), "V")
-                )
-            )
-
-            // Assume
-            assert(map.find("A") == "A") { "A must be the representative" }
-
-            // Act
-            val value = map.getOrDefault("A", "default")
-
-            // Assert
-            assertEquals("V", value)
-        }
-
-        @Test
-        fun `returns null when value is null`() {
-            // Arrange
-            val map = create(
-                listOf(
-                    DisjointSet(setOf("A", "B", "C"), null as String?)
+            val map = factory.create(
+                mapOf(
+                    setOf("A", "B", "C") to "V",
                 )
             )
 
             // Assume
-            assert(map.find("A") == "A") { "A must be the representative" }
+            map.find("A") shouldBe "A" // Representative
 
             // Act
-            val value = map.getOrDefault("A", "default")
+            val result = map.getOrDefault("A", "default")
 
             // Assert
-            assertNull(value)
+            result shouldBe "V"
         }
 
+        test("should return the value, when the key exists but not as a representative") {
+            // Arrange
+            val map = factory.create(
+                mapOf(
+                    setOf("A", "B", "C") to "V",
+                )
+            )
+
+            // Assume
+            map.find("B") shouldNotBe "B" // Not representative
+
+            // Act
+            val result = map.getOrDefault("B", "default")
+
+            // Assert
+            result shouldBe "V"
+        }
+
+        test("should return null, when the value is null") {
+            // Arrange
+            val map = factory.create(
+                mapOf(
+                    setOf("A", "B", "C") to (null as String?),
+                )
+            )
+
+            // Assume
+            map.find("A") shouldBe "A" // Representative
+
+            // Act
+            val result = map.getOrDefault("A", "default")
+
+            // Assert
+            result shouldBe null
+        }
     }
 
-    /**
-     * Tests the [DisjointMap.find] method.
-     */
-    interface `find()`: DisjointMapTests {
-
-        @Test
-        fun `returns same element when representative not found`() {
+    context("find()") {
+        test("should return null, when the map is empty") {
             // Arrange
-            val map = create<String, String>()
+            val map = factory.create<String, String>()
 
             // Act
-            val rep = map.find("A")
+            val result = map.find("A")
 
             // Assert
-            assertEquals("A", rep)
+            result shouldBe null
         }
 
-        @Test
-        fun `returns same element when found as representative`() {
+        test("should return null, when it does not exist in the map") {
             // Arrange
-            val map = create(
-                listOf(
-                    DisjointSet(setOf("A"), "V")
+            val map = factory.create(
+                mapOf(
+                    setOf("A") to "Va",
+                    setOf("B") to "V",
+                    setOf("C") to "V",
                 )
             )
 
             // Act
-            val rep = map.find("A")
+            val result = map.find("D")
 
             // Assert
-            assertEquals("A", rep)
+            result shouldBe null
         }
 
-        @Test
-        fun `returns representative`() {
+        test("should return itself, when it is a representative") {
             // Arrange
-            val map = create(
-                listOf(
-                    DisjointSet(setOf("A", "B", "C"), "V")
+            val map = factory.create(
+                mapOf(
+                    setOf("A", "B", "C") to "V",
                 )
             )
 
+            // Assume
+            map.find("A") shouldBe "A" // Representative
+
             // Act
-            val rep = map.find("B")
+            val result = map.find("A")
 
             // Assert
-            assertEquals("A", rep)
+            result shouldBe "A"
         }
 
+        test("should return the representative, when it is not a representative") {
+            // Arrange
+            val map = factory.create(
+                mapOf(
+                    setOf("A", "B", "C") to "V",
+                )
+            )
+
+            // Assume
+            map.find("B") shouldNotBe "B" // Not representative
+
+            // Act
+            val result = map.find("B")
+
+            // Assert
+            result shouldBe "A"
+        }
     }
 
-    /**
-     * Tests the [DisjointMap.contains()] method.
-     */
-    interface `contains()`: DisjointMapTests {
-        @Test
-        fun `returns false for any key in empty map`() {
+    context("contains()") {
+        test("should return false, when the map is empty") {
             // Arrange
-            val map = create<String, String>()
+            val map = factory.create<String, String>()
 
             // Act
             val result = map.contains("A")
 
             // Assert
-            assertFalse(result)
+            result shouldBe false
         }
 
-        @Test
-        fun `returns false for non-existing key`() {
+        test("should return false, when the key does not exist") {
             // Arrange
-            val map = create(
-                listOf(
-                    DisjointSet(setOf("A1", "A2", "A3"), "Va"),
-                    DisjointSet(setOf("B1", "B2"), "V"),
-                    DisjointSet(setOf("C1"), "V")
+            val map = factory.create(
+                mapOf(
+                    setOf("A") to "Va",
+                    setOf("B") to "V",
+                    setOf("C") to "V",
                 )
             )
 
             // Act
-            val result = map.contains("X")
+            val result = map.contains("D")
 
             // Assert
-            assertFalse(result)
+            result shouldBe false
         }
 
-        @Test
-        fun `returns true for representative`() {
+        test("should return true, when the key exists as a representative") {
             // Arrange
-            val map = create(
-                listOf(
-                    DisjointSet(setOf("A1", "A2", "A3"), "Va"),
-                    DisjointSet(setOf("B1", "B2"), "V"),
-                    DisjointSet(setOf("C1"), "V")
+            val map = factory.create(
+                mapOf(
+                    setOf("A", "B", "C") to "V",
                 )
             )
 
             // Assume
-            assert(map.find("C1") == "C1") { "C1 must be the representative" }
+            map.find("A") shouldBe "A" // Representative
 
             // Act
-            val result = map.contains("C1")
+            val result = map.contains("A")
 
             // Assert
-            assertTrue(result)
+            result shouldBe true
         }
 
-        @Test
-        fun `returns true for non-representative`() {
+        test("should return true, when the key exists but not as a representative") {
             // Arrange
-            val map = create(
-                listOf(
-                    DisjointSet(setOf("A1", "A2", "A3"), "Va"),
-                    DisjointSet(setOf("B1", "B2"), "V"),
-                    DisjointSet(setOf("C1"), "V")
+            val map = factory.create(
+                mapOf(
+                    setOf("A", "B", "C") to "V",
                 )
             )
 
             // Assume
-            assert(map.find("A3") != "A3") { "A3 must not be the representative" }
+            map.find("B") shouldNotBe "B" // Not representative
 
             // Act
-            val result = map.contains("A3")
+            val result = map.contains("B")
 
             // Assert
-            assertTrue(result)
+            result shouldBe true
         }
     }
 
-    /**
-     * Tests the [DisjointMap.same] method.
-     */
-    interface `same()`: DisjointMapTests {
-
-        @Test
-        fun `returns true when comparing same elements with no representatives`() {
+    context("same") {
+        test("should return false, when comparing the same elements that are not present in the map") {
             // Arrange
-            val map = create<String, String>()
+            val map = factory.create<String, String>()
 
             // Act
-            val same = map.same("A", "A")
+            val result = map.same("A", "A")
 
             // Assert
-            assertTrue(same)
+            result shouldBe false
         }
 
-
-        @Test
-        fun `returns false when comparing different elements with no representatives`() {
+        test("should return false, when comparing different elements that are not present in the map") {
             // Arrange
-            val map = create<String, String>()
+            val map = factory.create<String, String>()
 
             // Act
-            val same = map.same("A", "X")
+            val result = map.same("A", "B")
 
             // Assert
-            assertFalse(same)
+            result shouldBe false
         }
 
-
-        @Test
-        fun `returns true when comparing same elements that are representatives`() {
+        test("should return true, when comparing the same elements that are representatives") {
             // Arrange
-            val map = create(
-                listOf(
-                    DisjointSet(setOf("A"), "V")
+            val map = factory.create(
+                mapOf(
+                    setOf("A") to "V",
                 )
             )
 
             // Act
-            val same = map.same("A", "A")
+            val result = map.same("A", "A")
 
             // Assert
-            assertTrue(same)
+            result shouldBe true
         }
 
-
-        @Test
-        fun `returns false when comparing different elements that are representatives`() {
+        test("should return false, when comparing different elements that are representatives") {
             // Arrange
-            val map = create(
-                listOf(
-                    DisjointSet(setOf("A"), "V1"),
-                    DisjointSet(setOf("X"), "V2")
+            val map = factory.create(
+                mapOf(
+                    setOf("A") to "V1",
+                    setOf("B") to "V2",
                 )
             )
 
             // Act
-            val same = map.same("A", "X")
+            val result = map.same("A", "B")
 
             // Assert
-            assertFalse(same)
+            result shouldBe false
         }
 
-
-        @Test
-        fun `returns true when comparing elements in the same component`() {
+        test("should return true, when comparing different elements in the same component") {
             // Arrange
-            val map = create(
-                listOf(
-                    DisjointSet(setOf("A", "B", "C"), "V")
+            val map = factory.create(
+                mapOf(
+                    setOf("A", "B", "C") to "V",
                 )
             )
 
             // Act
-            val same = map.same("B", "C")
+            val result = map.same("A", "B")
 
             // Assert
-            assertTrue(same)
+            result shouldBe true
         }
-
-
     }
-
 }

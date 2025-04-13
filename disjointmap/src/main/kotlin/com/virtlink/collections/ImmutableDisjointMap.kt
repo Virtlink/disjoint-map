@@ -5,8 +5,8 @@ import kotlinx.collections.immutable.ImmutableMap
 /**
  * An immutable disjoint map.
  *
- * @param K the type of keys
- * @param V the type of values
+ * @param K The type of keys.
+ * @param V The type of values.
  */
 interface ImmutableDisjointMap<K, out V> : DisjointMap<K, V> {
 

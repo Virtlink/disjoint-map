@@ -18,12 +18,9 @@ jobs:
           - 'ubuntu-latest'
         java:
           - version: '11'
+          - version: '17'
         gradle:
           - version: '7.6.4'      # Latest stable 7
-            command: 'gradle'
-          - version: '8.8'        # Latest stable 8
-            command: 'gradle'
-          - version: 'current'    # Latest stable
             command: 'gradle'
           - version: 'wrapper'
             command: './gradlew'  # Workaround for issue https://github.com/gradle/actions/issues/273

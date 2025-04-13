@@ -29,8 +29,8 @@ internal fun <K, V> findMutable(
 
     // TODO: Can we do this iteratively, to avoid updating the parents and ranks maps so much?
     // Find the representative of the parent key
-    val representative = N.assumeNotNull(findMutable(parent, roots, parents, ranks))
-    if (parent != representative) {
+    val representative = findMutable(parent, roots, parents, ranks)
+    if (representative != null && parent != representative) {
         // Path compression:
         // Update the key to point directly to the representative key
         parents[key] = representative
@@ -64,6 +64,7 @@ internal fun <K, V> findMutable(
  * @param V the type of values
  * @return whether disjoint sets have been unified
  */
+@Suppress("UNCHECKED_CAST")
 internal fun <K, V> unionMutable(
     key1: K,
     key2: K,
@@ -92,14 +93,14 @@ internal fun <K, V> unionMutable(
         elem in roots.keys && repr in roots.keys -> {
             // NOTE: We know both `element` and `rep` are in the values map,
             //  so values.get() should only return null when their value happens to be null.
-            val repValue = N.of(roots[repr])
-            val elemValue = N.of(roots[elem])
+            val repValue = roots[repr] as V
+            val elemValue = roots[elem] as V
             unify(repValue, elemValue)
         }
         // - the value associated with the representative element;
-        repr in roots.keys -> N.of(roots[repr])
+        repr in roots.keys -> roots[repr] as V
         // - the value associated with the eliminated element; or
-        elem in roots.keys -> N.of(roots[elem])
+        elem in roots.keys -> roots[elem] as V
         // - the default value when neither element has an associated value.
         else -> default()
     }
@@ -241,7 +242,10 @@ internal fun <K, V> DisjointMap<K, V>.toMapImpl(
     roots.keys.forEach { k -> mapping[k] = mutableSetOf(k) }
     parents.keys.forEach { k -> mapping[find(k)]!!.add(k) }
 
-    return mapping.map { (rep, keys) -> keys.toPersistentSet() to N.of(roots[rep]) }
+    return mapping.map { (rep, keys) ->
+        @Suppress("UNCHECKED_CAST")
+        keys.toPersistentSet() to (roots[rep] as V)
+    }
         .toMap<Set<K>, V>()
 }
 

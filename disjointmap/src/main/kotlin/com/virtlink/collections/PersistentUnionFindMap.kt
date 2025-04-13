@@ -39,7 +39,10 @@ class PersistentUnionFindMap<K, V> internal constructor(
 
     override fun getOrDefault(key: K, defaultValue: @UnsafeVariance V): V {
         val rep = find(key) ?: return defaultValue
-        return this._roots[rep] ?: defaultValue
+        @Suppress("UNCHECKED_CAST")
+        // We know the key is in the map,
+        // so this only returns `null` if the value in the map is `null`.
+        return this._roots[rep] as V
     }
 
     override fun find(key: K): K? {
