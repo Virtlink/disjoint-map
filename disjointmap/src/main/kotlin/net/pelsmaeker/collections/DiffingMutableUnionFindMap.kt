@@ -1,4 +1,4 @@
-package com.virtlink.collections
+package net.pelsmaeker.collections
 
 /**
  * A mutable union-find map that tracks its changes.

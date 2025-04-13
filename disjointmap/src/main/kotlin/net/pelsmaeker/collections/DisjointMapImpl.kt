@@ -1,4 +1,4 @@
-package com.virtlink.collections
+package net.pelsmaeker.collections
 
 import kotlinx.collections.immutable.toPersistentSet
 

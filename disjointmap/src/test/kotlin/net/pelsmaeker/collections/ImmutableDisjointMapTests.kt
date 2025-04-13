@@ -1,4 +1,4 @@
-package com.virtlink.collections
+package net.pelsmaeker.collections
 
 import io.kotest.core.spec.style.funSpec
 

@@ -1,4 +1,4 @@
-package com.virtlink.collections
+package net.pelsmaeker.collections
 
 import kotlinx.collections.immutable.*
 
@@ -153,7 +153,7 @@ class PersistentUnionFindMap<K, V> internal constructor(
         newRoots: PersistentMap<K, V>,
         newParents: PersistentMap<K, K>,
         newRanks: PersistentMap<K, Int>
-    ): PersistentUnionFindMap<K, V>  {
+    ): PersistentUnionFindMap<K, V> {
         if (newRoots === this._roots && newParents === this._parents && newRanks === this._ranks) return this
         return PersistentUnionFindMap(newRoots, newParents, newRanks)
     }

@@ -1,6 +1,6 @@
 @file:Suppress("unused")
 
-package com.virtlink.collections
+package net.pelsmaeker.collections
 
 /**
  * Returns an empty persistent disjoint map.

@@ -1,4 +1,4 @@
-package com.virtlink.collections
+package net.pelsmaeker.collections
 
 /**
  * A map of disjoint sets associated with a value.
