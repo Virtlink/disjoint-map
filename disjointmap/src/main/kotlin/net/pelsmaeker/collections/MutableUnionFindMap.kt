@@ -15,7 +15,7 @@ package net.pelsmaeker.collections
 class MutableUnionFindMap<K, V> internal constructor(
     private val _roots: MutableMap<K, V>,
     private val _parents: MutableMap<K, K>,
-    private val _ranks: MutableMap<K, Int>
+    private val _ranks: MutableMap<K, Int>,
 ): MutableDisjointMap<K, V> {
 
     constructor(): this(mutableMapOf(), mutableMapOf(), mutableMapOf())
@@ -102,5 +102,25 @@ class MutableUnionFindMap<K, V> internal constructor(
     override fun toMap(): MutableMap<Set<K>, V> {
         return toMapImpl(this._roots, this._parents, this._ranks).toMutableMap()
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as MutableDisjointMap<*, *>
+
+        return this.toMap() == other.toMap()
+    }
+
+    override fun hashCode(): Int {
+        var result = 17
+        result = 31 * result + _roots.hashCode()
+        result = 31 * result + _parents.hashCode()
+        result = 31 * result + _ranks.hashCode()
+        return result
+    }
+
+
+    // TODO: Implement equals() and hashCode() methods
 
 }
