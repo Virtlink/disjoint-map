@@ -17,6 +17,12 @@ interface DisjointMap<K, out V> {
     /** Determines whether the collection is not empty. */
     fun isNotEmpty(): Boolean = !isEmpty()
 
+    /** The keys in the disjoint map. */
+    val keys: Set<K>
+
+    /** The values in the disjoint map. */
+    val values: Collection<V>
+
     /**
      * Gets the value associated with the set that contains the specified key;
      * or `null` when the key is not in the map.

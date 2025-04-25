@@ -6,7 +6,11 @@ package net.pelsmaeker.collections
  * Given an underlying union-find map U, and this map M:
  * A key can be added to M, which is not found in U.
  */
-class DiffingMutableUnionFindMap<K, V>: MutableDisjointMap<K, V> {
+class DiffingMutableUnionFindMap<K, V> : MutableDisjointMap<K, V> {
+
+    override val keys: Set<K> get() = TODO()
+    override val values: Collection<V> get() = TODO()
+
     override val size: Int
         get() = TODO("Not yet implemented")
 

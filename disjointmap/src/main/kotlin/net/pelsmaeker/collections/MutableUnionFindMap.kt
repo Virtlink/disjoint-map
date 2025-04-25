@@ -22,6 +22,12 @@ class MutableUnionFindMap<K, V> internal constructor(
 
     override val size: Int get() = _roots.size + _parents.size
 
+    override val keys: Set<K>
+        get() = _roots.keys + _parents.keys
+
+    override val values: Collection<V>
+        get() = _roots.values
+
     override operator fun get(key: K): V? {
         val rep = find(key) ?: return null
         return this._roots[rep]

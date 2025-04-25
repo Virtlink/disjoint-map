@@ -1,6 +1,7 @@
 package net.pelsmaeker.collections
 
 import kotlinx.collections.immutable.*
+import kotlin.collections.plus
 
 /**
  * A persistent union-find map.
@@ -31,6 +32,12 @@ class PersistentUnionFindMap<K, V> internal constructor(
     }
 
     override val size: Int get() = _roots.size + _parents.size
+
+    override val keys: Set<K>
+        get() = _roots.keys + _parents.keys
+
+    override val values: Collection<V>
+        get() = _roots.values
 
     override operator fun get(key: K): V? {
         val rep = find(key) ?: return null
@@ -168,6 +175,12 @@ class PersistentUnionFindMap<K, V> internal constructor(
 
         override val size: Int
             get() = currentMap.size
+
+        override val keys: Set<K>
+            get() = currentMap.keys
+
+        override val values: Collection<V>
+            get() = currentMap.values
 
         override fun isEmpty() = currentMap.isEmpty()
 
