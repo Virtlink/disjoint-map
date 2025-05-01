@@ -245,8 +245,7 @@ internal fun <K, V> DisjointMap<K, V>.toMapImpl(
     return mapping.map { (rep, keys) ->
         @Suppress("UNCHECKED_CAST")
         keys.toPersistentSet() to (roots[rep] as V)
-    }
-        .toMap<Set<K>, V>()
+    }.toMap<Set<K>, V>()
 }
 
 // TODO: Replace this function with Map.replaceAll() once it's fixed for PersistentMap.builder()
